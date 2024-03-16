@@ -1,0 +1,21 @@
+import torch
+import torch.nn.functional as F
+
+logits = torch.tensor([1.8611, 1.6517, 1.8458, 1.7093, 1.8948])
+probs = F.softmax(logits, dim=0)
+print(probs[0])
+logits = torch.tensor([1.9347, 1.6517, 1.7189, 1.6476, 1.7585])
+probs = F.softmax(logits, dim=0)
+print(probs)
+logits = torch.tensor([1.8920, 1.8458, 1.7189, 1.8031, 1.7843])
+probs = F.softmax(logits, dim=0)
+print(probs)
+logits = torch.tensor([1.8611, 1.6476, 1.8031, 1.6345, 1.8251])
+probs = F.softmax(logits, dim=0)
+print(probs)
+logits = torch.tensor([1.9347, 1.7093, 1.7843, 1.6345, 1.7564])
+probs = F.softmax(logits, dim=0)
+print(probs)
+logits = torch.tensor([1.8920, 1.8948, 1.7585, 1.8251, 1.7564])
+probs = F.softmax(logits, dim=0)
+print(probs)

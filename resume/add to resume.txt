@@ -1,0 +1,49 @@
+Summary:
+    Highly motivated and results-oriented Cloud Full Stack Developer with 1+ years of experience and designing, developing, and deploying scalable and secure applications on AWS. Proven ability to deliver high-performance solutions under tight deadlines and excel in collaborative environments. Adept at requirements analysis, architecture design, API development, data management, and cloud infrastructure implementation. Enthusiastic about building innovative solutions that optimize efficiency and user experience.
+Objective:
+    Dynamic and results-oriented Cloud Full Stack Developer with a proven track record of designing and implementing robust cloud solutions. Equipped with strong architectural expertise and extensive experience in developing scalable systems on AWS. Seeking to leverage skills in technical requirement generation, architecture design, and software development to drive innovation in OTT content reseller business models and Cloud fintech solutions.
+Technical Skills:
+    Programming Languages: Java, SpringBoot, WebFlux, MVC, Threading, Python, JavaScript (ReactJS).
+    Databases: MySQL, PostgreSQL, AWS RDS, Cassandra.
+    Big Data & Analytics: Apache Spark, Athena, CloudWatch.
+    Cloud Platforms: AWS (EKS, ECS, RDS, S3, Lambda, Cloudfront, Cloudwatch, Elasticache).
+    DevOps Tools: Git, Jenkins, Docker, Kubernetes.
+    APIs & Microservices: RESTful APIs, Microservice Architecture.
+    Software Development Methodologies: Agile, Scrum.
+Key Skills:
+    Strong architecture and design experience on cloud platforms (AWS).
+    Expertise in requirements analysis, design, implementation, and testing of software/web applications.
+    Experience in OTT partnerships and content aggregation at the product level.
+    Proficient in database management, schema design, and query optimizations.
+    Skilled in developing highly secure services handling financial transactions data with logging for audit purposes.
+    Proficient in writing REST API services following micro-service architecture.
+    Technical proficiency in Java (8 or higher), SpringBoot, WebFlux, MVC, Threading, Hibernate/MyBatis, JUnit.
+    Experience in Big Data analysis using Apache Spark, Athena, etc.
+    Strong understanding of AWS Cloud infrastructure architecture, including EKS, ECS, RDS, S3, Lambda, CloudFront, CloudWatch, Elasticache, etc.
+    Excellent communication and collaboration skills, with the ability to engage effectively with technical and non-technical stakeholders.
+
+Professional Experience:
+1) Cloud Software Engineer, Acme Corporation (Nov 2023 - Present)
+    Designed and implemented a highly scalable cloud-based ETL pipeline using AWS EKS and Spark to process millions of records daily, significantly improving data availability and reducing processing time by 30%.
+    Architected and developed a secure microservices platform using SpringBoot and WebFlux to handle end-to-end financial transactions for 10+ million users, ensuring 99.99% uptime and PCI compliance.
+    Led the development of a cloud-native content management system utilizing AWS S3 and Lambda functions, automating file ingestion and metadata tagging, resulting in a 25% reduction in manual workload.
+    Collaborated with product and design teams to gather requirements, define technical specifications, and deliver solutions exceeding user expectations.
+    Mentored junior developers and fostered a collaborative learning environment within the team.
+
+2) Software Developer, XYZ Software Solutions (Jun 2023 - Oct 2023)
+    Developed and maintained web applications using Java/Spring MVC and JavaScript/ReactJS frameworks, ensuring responsive and user-friendly interfaces.
+    Designed and implemented efficient database models and performed complex data queries using MySQL and PostgreSQL.
+    Contributed to building and enhancing DevOps processes with Git, Jenkins, and Docker containers.
+    Worked closely with clients to understand their needs and deliver high-quality software solutions within budget and timeline constraints.
+3) Cloud Full Stack Developer, Freelancing (Jun 2022 - Jun 2023)
+    Spearheaded technical requirement generation for reseller business model for OTT content, facilitating efficient communication with stakeholders and ensuring alignment with project objectives.
+    Designed and implemented architecture for large-scale Cloud ETL and Cloud fintech solutions, achieving 100% service availability and scalability to cater to millions of user requests every hour.
+    Developed process efficiency solutions for end-to-end improvement of auditing, content management, and reporting, optimizing system performance and enhancing user experience.
+    Designed systems to streamline onboarding and integration of 3rd party vendors using automated systems with checks and approvals, fostering seamless collaboration and partnership development.
+Additional Information:
+    Excellent communication and interpersonal skills with the ability to collaborate effectively with diverse teams.
+    Strong analytical and problem-solving skills with a focus on delivering efficient and innovative solutions.
+    Passionate about staying up-to-date with the latest technologies and trends in the cloud computing space.
+    Active member of the local developer community and contributor to open-source projects.
+
+Keywords: Cloud Full Stack Developer, AWS, Java, Spring, Spark, Agile, microservices, DevOps, scalability, security, API, financial transactions, ETL, content management, data analysis
