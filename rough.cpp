@@ -26,57 +26,25 @@ using namespace std;
 #define pii pair<int, int>
 #define ll long long
 #define ll long long
+#define X first
+#define Y second
+
 class Solution {
 public:
-    vector<ll> ps{0};
-    int n; map<pair<ll, ll>, pair<bool, ll>> m;
-    vector<vector<pair<bool, ll>>> maaa;
-    pair<bool, ll> fin(int s, int k){
-        if(k==0) return {true, 0};
-        if(s>=n){return {false, 0};}
-        // if(m.find({s, k})!=m.end()) return m[{s, k}];
-        if(maaa[s][k].first!=false || maaa[s][k].second!=-1) return maaa[s][k];
-        if(k%2==1){
-            ll min_e = ps[s];
-            ll ans = -1ll*1e15;
-            for(int i = s;i<n;i++){
-                ll curr = ps[i+1]-min_e;
-                pair<bool, ll> next = fin(i+1, k-1);
-                if(next.first) ans = max(ans, curr*k+next.second);
-                min_e = min(min_e, ps[i+1]);
-            }
-            
-            if(ans!=-1ll*1e15){
-                // m[{s, k}] = {true, ans};
-                maaa[s][k]={true, ans};
-                return {true, ans};}
-            // m[{s, k}] = {false, 0};
-            maaa[s][k]={false, 0};
-            return {false, 0};
-        }else{
-            ll max_e = ps[s];
-            ll ans = -1ll*1e15;
-            for(int i = s;i<n;i++){
-                ll curr = ps[i+1]-max_e;
-                pair<bool, ll> next = fin(i+1, k-1);
-                if(next.first) ans=max(ans, next.second - curr*k);
-                max_e = max(max_e, ps[i+1]);
-            }
-            if(ans!=-1ll*1e15){
-                // m[{s, k}] = {true, ans};
-                maaa[s][k]={true, ans};
-                return {true, ans};
-            }
-            // m[{s, k}] = {false, 0};
-            maaa[s][k]={false, 0};
-            return {false, 0};
+    vector<int> arrayRankTransform(vector<int>& arr) {
+        int n = arr.size();
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>> > q;
+        vector<int> ans(n, 0);
+        for(int i = 0;i<n;i++) q.push({arr[i], i});
+        auto t = q.top(); q.pop();
+        ans[t.second]=1; int l = 1; int le = t.first;
+        while(q.size()){
+            cout<<le<<'\n';
+            t = q.top(); q.pop();
+            if(le<t.first) l++;
+            ans[t.second]=l; le = t.first;
         }
-    }    
-    ll maximumStrength(vector<int>& nums, int k) {
-        for(auto i: nums) ps.push_back(ps.back()+i);
-        n = nums.size();
-        maaa.resize(n+1, vector<pair<bool, ll>>(k+1, {false, -1}));
-        return fin(0, k).second;
+        return ans;
     }
 };
 
@@ -85,16 +53,20 @@ int main() {
     // string st = "bbbab";
     Solution s;
     // vector<string> d {"a","b","ba","bca","bda","bdca"};
-    vector<int> v1 {-431289354,-444830975,-464870607,-524498730,-555271103,-639213035,-665454754,-741322734,-860863672,-914046082,-996157908}; // = {3,1,5,3,1,1};
-    vector<int> v2{2,2,2,2,2,2,3,1};
+    vector<int> v1 {4, 1,2, 3}; // = {3,1,5,3,1,1};
+    vector<int> v2{2,4};
     vector<vector<int>> v{{1,20},{2, 10},{3, 5},{4, 9},{6, 8}};
-    vector<string> c1{"abc","bcd","abcd"};
-    vector<string> c2{"abbb","ba","aa"};
-    vector<vector<int>> v12 {{7,6,3},{6,6,1}};
+    vector<string> s1{"dog","cat","dad","good"};
+    vector<string> s2{"a","b","c"};
+    vector<char> c1{'a','a','c','d','d','d','g','o','o'};
+    vector<vector<int>> v12 {{2,3,9},{1,0,2},{1,3,3}};
     vector<vector<int>> v13 {{3,4},{5,5}};
+    vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
-    cout<<s.maximumStrength(v1, 11);
-    // for(auto i: s.shortestSubstrings(c1)) cout<<i<<"-";
+    // cout<<"Hello";
+    // cout<<s.arrayRankTransform(v1);
+    // cout<<s.maximumTotalDamage(v1);
+    for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";
     // string a = "aaaa";

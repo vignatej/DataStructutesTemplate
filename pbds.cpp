@@ -15,6 +15,9 @@ less_equal<T>, rb_tree_tag,tree_order_statistics_node_update>;
 // cout<<a.order_by_key(10) -> gives posn of 10
 // its 0-indexed
 
+
+// for deletion do this -> s.erase(s.find_by_order(s.order_of_key(v[a])));
+
 int main() {
     ordered_set <int> a;
     a.insert(2);

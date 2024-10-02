@@ -1,37 +1,29 @@
-#include <iostream>
-#include <vector>
-#include <deque>
-#include <string>
-#include <algorithm>
-#include <map>
-#include <limits>
-#include <utility>
-#include <cmath>
-#include <list>
-#include <sstream>
-#include <set>
-#include <numeric>
-#include <bitset>
-#include <chrono>
+#include <bits/stdc++.h>
 using namespace std;
-#define ll long long
-#define vi vector<int>
-#define pii pair<int, int>
-int main(int argc, char const *argv[])
-{
-    int T;cin>>T;
+#define int long long
+int calc(int pp, int ca, int l, int r){
+    int ans{0};
+    while(!(pp<=l && l<pp*3)){pp*=3; ca++;}
+    if(pp<=r && r<pp*3){
+        ans += (r-l+1)*ca;
+        return ans;
+    }
+    return (pp*3 -l)*ca + calc(pp*3, ca+1, pp*3, r) ;
+}
+signed main(){
+    int T; cin>>T;
     while(T>0){T--;
-        ll n, c; cin>>n>>c;
-        vector<ll> s(n, 0);
-        for(auto &i: s) cin>>i;
-        ll o{0}, e{0};
-        ll ans{0};
-        ans+=((c+1)*(c+2))/2;
-        for(auto &i: s) if(i%2==1) o++; else e++;
-        for(auto i: s) ans-=i/2+1;
-        for(auto i: s) ans-=(c-i+1);
-        ans+=(o*(o+1))/2;
-        ans+=(e*(e+1))/2;
-        cout<<ans<<"\n";
-    }        
+        int l, r; cin>>l>>r;
+        int s = l; int ans{0};
+        while(s){s/=3; ans+=2;}
+        l++;
+        // int ca{1}; int pp{1};
+        // while(!(pp<=l && l<pp*3)){pp*=3; ca++;}
+        // if(pp<=r && r<=pp*3){
+        //     ans += (r-l+1)*ca;
+        //     cout<<ans<<'\n'; 
+        //     continue;
+        // }
+        cout<<ans+calc(1, 1, l, r)<<'\n';
+    }
 }

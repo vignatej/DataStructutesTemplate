@@ -63,6 +63,7 @@ public:
         add_element(posn, diff);
     }
 };
+
 class segment_tre_for_max{
 public:
     vector<int> arr;
