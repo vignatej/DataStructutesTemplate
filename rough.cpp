@@ -28,22 +28,41 @@ using namespace std;
 #define ll long long
 #define X first
 #define Y second
-
 class Solution {
 public:
-    vector<int> arrayRankTransform(vector<int>& arr) {
-        int n = arr.size();
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>> > q;
-        vector<int> ans(n, 0);
-        for(int i = 0;i<n;i++) q.push({arr[i], i});
-        auto t = q.top(); q.pop();
-        ans[t.second]=1; int l = 1; int le = t.first;
-        while(q.size()){
-            cout<<le<<'\n';
-            t = q.top(); q.pop();
-            if(le<t.first) l++;
-            ans[t.second]=l; le = t.first;
+    int minSubarray(vector<int>& nums, int p) {
+        int n = nums.size();
+        vector<int> ps(n+1, 0);
+        map<int, deque<int>> m;
+        for(int i = 0;i<n;i++){
+            ps[i+1]=ps[i]+nums[i];
+            ps[i+1]%=p;
+            m[ps[i+1]].push_back(i);
         }
+        // {
+        //     int ts = accumulate(nums.begin(), nums.end(), 0);
+        //     int cas{n}; int ii{-1}; int ij{-1};
+        //     for(int i = 0;i<n;i++){
+        //         int cs{0};
+        //         for(int j = i;j<n;j++){
+        //             cs+=nums[j];
+        //             if((ts-cs)%p==0 && cas>j-i+1){cas=j-i+1; ii=i; ij=j;}
+        //         }
+        //     }
+        //     cout<<cas<<' '<<ii<<' '<<ij<<'\n';
+        // }
+        int ans = n; int rtr = ps.back();
+        if(rtr==0) return 0;
+        if(m[rtr].size()) ans = m[rtr].front()+1;
+        for(int i = 0;i<n;i++){
+            int c = ps[i+1];
+            m[c].pop_front();
+            int rem = c+rtr; rem+=p; rem%=p;
+            if(m[rem].size()==0) continue;
+            int t = m[rem].front();
+            ans = min(ans, t-i);
+        }
+        if(ans==n) return -1;
         return ans;
     }
 };
@@ -53,7 +72,7 @@ int main() {
     // string st = "bbbab";
     Solution s;
     // vector<string> d {"a","b","ba","bca","bda","bdca"};
-    vector<int> v1 {4, 1,2, 3}; // = {3,1,5,3,1,1};
+    vector<int> v1 {8,32,31,18,34,20,21,13,1,27,23,22,11,15,30,4,2}; // = {3,1,5,3,1,1};
     vector<int> v2{2,4};
     vector<vector<int>> v{{1,20},{2, 10},{3, 5},{4, 9},{6, 8}};
     vector<string> s1{"dog","cat","dad","good"};
@@ -64,9 +83,9 @@ int main() {
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
     // cout<<"Hello";
-    // cout<<s.arrayRankTransform(v1);
+    cout<<s.minSubarray(v1, 148);
     // cout<<s.maximumTotalDamage(v1);
-    for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
+    // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";
     // string a = "aaaa";
