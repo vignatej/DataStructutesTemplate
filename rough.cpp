@@ -24,8 +24,6 @@ using namespace std;
 #include <chrono>
 using namespace std;
 #define pii pair<int, int>
-#define ll long long
-#define ll long long
 #define X first
 #define Y second
 #define ll long long
