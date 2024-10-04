@@ -28,41 +28,34 @@ using namespace std;
 #define ll long long
 #define X first
 #define Y second
+#define ll long long
 class Solution {
 public:
-    int minSubarray(vector<int>& nums, int p) {
-        int n = nums.size();
-        vector<int> ps(n+1, 0);
+    long long dividePlayers(vector<int>& skill) {
+        int n = skill.size();
+        ll ts{0};
+        for(auto &i: skill) ts+=i;
+        ll es = (2*ts)/n;
+        if(es*1ll*n != ts*2) return -1;
+        if(*max_element(skill.begin(), skill.end())>es) return -1;
         map<int, deque<int>> m;
-        for(int i = 0;i<n;i++){
-            ps[i+1]=ps[i]+nums[i];
-            ps[i+1]%=p;
-            m[ps[i+1]].push_back(i);
+        for(auto &i: skill) m[i%es].push_back(i);
+        vector<pair<int, int>> av;
+        for(auto &i: m){
+            int f = i.first; auto &q = i.second;
+            if(q.size()==0) continue;
+            if(f*2==es){
+                if(q.size()%2) return -1;
+                for(int j = 0;j<q.size();j+=2) av.push_back({q[j],q[j+1]});
+                continue;
+            }
+            auto &nq = m[es-f];
+            if(nq.size()!=q.size()) return -1;
+            for(int j = 0;j<q.size();j++) av.push_back({q[j], nq[j]});
+            m[es-f].clear();
         }
-        // {
-        //     int ts = accumulate(nums.begin(), nums.end(), 0);
-        //     int cas{n}; int ii{-1}; int ij{-1};
-        //     for(int i = 0;i<n;i++){
-        //         int cs{0};
-        //         for(int j = i;j<n;j++){
-        //             cs+=nums[j];
-        //             if((ts-cs)%p==0 && cas>j-i+1){cas=j-i+1; ii=i; ij=j;}
-        //         }
-        //     }
-        //     cout<<cas<<' '<<ii<<' '<<ij<<'\n';
-        // }
-        int ans = n; int rtr = ps.back();
-        if(rtr==0) return 0;
-        if(m[rtr].size()) ans = m[rtr].front()+1;
-        for(int i = 0;i<n;i++){
-            int c = ps[i+1];
-            m[c].pop_front();
-            int rem = c+rtr; rem+=p; rem%=p;
-            if(m[rem].size()==0) continue;
-            int t = m[rem].front();
-            ans = min(ans, t-i);
-        }
-        if(ans==n) return -1;
+        ll ans{0};
+        for(auto &i: av) ans+=1ll*i.first*i.second;
         return ans;
     }
 };
@@ -72,7 +65,7 @@ int main() {
     // string st = "bbbab";
     Solution s;
     // vector<string> d {"a","b","ba","bca","bda","bdca"};
-    vector<int> v1 {8,32,31,18,34,20,21,13,1,27,23,22,11,15,30,4,2}; // = {3,1,5,3,1,1};
+    vector<int> v1 {3,2,5,1,3,4}; // = {3,1,5,3,1,1};
     vector<int> v2{2,4};
     vector<vector<int>> v{{1,20},{2, 10},{3, 5},{4, 9},{6, 8}};
     vector<string> s1{"dog","cat","dad","good"};
@@ -83,7 +76,7 @@ int main() {
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
     // cout<<"Hello";
-    cout<<s.minSubarray(v1, 148);
+    cout<<s.dividePlayers(v1);
     // cout<<s.maximumTotalDamage(v1);
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
