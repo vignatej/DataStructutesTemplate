@@ -29,32 +29,23 @@ using namespace std;
 #define ll long long
 class Solution {
 public:
-    long long dividePlayers(vector<int>& skill) {
-        int n = skill.size();
-        ll ts{0};
-        for(auto &i: skill) ts+=i;
-        ll es = (2*ts)/n;
-        if(es*1ll*n != ts*2) return -1;
-        if(*max_element(skill.begin(), skill.end())>es) return -1;
-        map<int, deque<int>> m;
-        for(auto &i: skill) m[i%es].push_back(i);
-        vector<pair<int, int>> av;
-        for(auto &i: m){
-            int f = i.first; auto &q = i.second;
-            if(q.size()==0) continue;
-            if(f*2==es){
-                if(q.size()%2) return -1;
-                for(int j = 0;j<q.size();j+=2) av.push_back({q[j],q[j+1]});
-                continue;
+    bool checkInclusion(string s1, string s2) {
+        vector<int> v(26, 0);
+        for(auto &i: s1) v[i-'a']++;
+        int i = 0; int j = 0;
+        vector<int> curr(26, 0);
+        int n = s2.size();
+        while(i<n && j<n){
+            curr[s2[j]-'a']++;
+            if(curr[s2[j]-'a']==v[s2[j]-'a'])
+                if(curr == v) return true;
+            while(curr[s2[j]-'a']>v[s2[j]-'a']){
+                curr[s2[i]-'a']--;
+                i++;
             }
-            auto &nq = m[es-f];
-            if(nq.size()!=q.size()) return -1;
-            for(int j = 0;j<q.size();j++) av.push_back({q[j], nq[j]});
-            m[es-f].clear();
+            j++;
         }
-        ll ans{0};
-        for(auto &i: av) ans+=1ll*i.first*i.second;
-        return ans;
+        return false;
     }
 };
 
@@ -74,7 +65,7 @@ int main() {
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
     // cout<<"Hello";
-    cout<<s.dividePlayers(v1);
+    cout<<s.checkInclusion("ab", "eidboaoo");
     // cout<<s.maximumTotalDamage(v1);
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
