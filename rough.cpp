@@ -29,34 +29,28 @@ using namespace std;
 #define ll long long
 class Solution {
 public:
-    bool checkInclusion(string s1, string s2) {
-        vector<int> v(26, 0);
-        for(auto &i: s1) v[i-'a']++;
-        int i = 0; int j = 0;
-        vector<int> curr(26, 0);
-        int n = s2.size();
-        while(i<n && j<n){
-            curr[s2[j]-'a']++;
-            if(curr[s2[j]-'a']==v[s2[j]-'a'])
-                if(curr == v) return true;
-            while(curr[s2[j]-'a']>v[s2[j]-'a']){
-                curr[s2[i]-'a']--;
-                i++;
-            }
-            j++;
+    int minLength(string s) {
+        vector<char> v;
+        for(int i = 0;i<s.size();i++){
+            if(v.size()==0){v.push_back(s[i]); continue;}
+            if(s[i]=='B' && v.back()=='A'){v.pop_back(); continue;}
+            if(s[i]=='B' && v.back()=='C'){v.pop_back(); continue;}
+            v.push_back(s[i]);
         }
-        return false;
+        return v.size();
     }
 };
+
 
 int main() {
     // cout<<StringChallenge("**+*{2} mmmrrrkbb");
     // string st = "bbbab";
     Solution s;
     // vector<string> d {"a","b","ba","bca","bda","bdca"};
-    vector<int> v1 {3,2,5,1,3,4}; // = {3,1,5,3,1,1};
+    vector<int> v1 {2,8,16}; // = {3,1,5,3,1,1};
     vector<int> v2{2,4};
-    vector<vector<int>> v{{1,20},{2, 10},{3, 5},{4, 9},{6, 8}};
+    vector<vector<int>> v{{0,1},{0,4},{0,5},{1,7},{2,3},{2,4},{2,5},{3,6},{4,6},{4,7},{6,8},{7,8}};
+    
     vector<string> s1{"dog","cat","dad","good"};
     vector<string> s2{"a","b","c"};
     vector<char> c1{'a','a','c','d','d','d','g','o','o'};
@@ -65,8 +59,10 @@ int main() {
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
     // cout<<"Hello";
-    cout<<s.checkInclusion("ab", "eidboaoo");
-    // cout<<s.maximumTotalDamage(v1);
+    // for(auto i: s.constructGridLayout(9, v)) {
+    //     for(auto j: i) cout<<j;
+    // }
+    cout<<s.minLength("ABFCACDB");
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";
