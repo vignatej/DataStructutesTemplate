@@ -1,45 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
 #define int long long
-const int M = 1e9+7;
-const int N = 1e5+7;
-vector<int> fact(N + 1, 1);
-int binexp(int no, int power) {
-    int ans = 1;
-    while (power) {
-        if (power & (int)1) {
-            ans = (ans * no) % M;
-        }
-        no = (no * no) % M;
-        power >>= 1;
-    }
-    return ans%M;
-}
-int ncr(int n, int r) {
-    if (r < 0 || n < 0 || n < r) return 0;
-    int value = (fact[r] * fact[n - r]) % M;
-    int ans = (fact[n] * binexp(value, M - 2)) % M;
-    return ans;
-}
+
+    
 signed main(){
     int T; cin>>T;
-    for(int i = 1;i<=N;i++) fact[i]=(fact[i-1]*i)%M;
     while(T>0){T--;
-        int n, k; cin>>n>>k; vector<int> v(n);
-        int r1{0}; int oz{0}; int l1{0};
-        for(int i = 0;i<n;i++) {
-            int a; cin>>a; v[i]=a; 
-            if(a==1) r1++; else oz++;
+        int n; cin>>n;
+        vector<ll> v(n);
+        for(int i = 0;i<n;i++) cin>>v[i];
+        ll ans{0};
+        ll ts = accumulate(v.begin(), v.end(), 1ll*0);
+        map<int, int> m;
+        for(int i = 0;i<32;i++){
+            for(auto j: v){
+                if(((j>>i)&(1))) m[i]++;
+            }
         }
-        int ans{0};
-        for(int i= 0;i<n;i++){
-            if(v[i]==1)r1--;
-            if(v[i]==0) continue;
-            int cans =ncr(oz+l1,(k/2)); cans%=M;
-            cans*=ncr(r1, k/2); cans%=M;
-            ans+=cans; ans%=M;
-            if(v[i]==1)l1++;
+        for(int i = 0;i<n;i++){
+            int c_s = ts;
+            c_s+=v[i]*n;
+            for(int j = 0;j<32;j++){
+                int cv = 1ll*((v[i]>>j)&1)*m[j]*powl(2, j);
+                c_s -= 2*(cv);
+            }
+            ans = max(ans, c_s);
         }
         cout<<ans<<'\n';
+
+        // int ans{-1}; int req{0};
+        // for(auto &i: v){
+        //     int ca = 0;
+        //     for(auto &j: v){
+        //         ca+=i^j;
+        //     }
+        //     if(ans<ca){ans=ca; req=i;}
+        // }
+        // cout<<ans<<' '<<req<<'\n';
     }
 }

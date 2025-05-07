@@ -5,9 +5,8 @@ using namespace std;
 signed main(){
     int T; cin>>T;
     while(T>0){T--;
-        string s; cin>>s;
-        int ans{0};
-        for(auto &i: s) ans+=i-'0';
-        cout<<ans<<'\n';
+        string s1, s2, s3;
+        cin>>s1>>s2>>s3;
+        cout<<s1[0]<<s2[0]<<s3[0]<<'\n';
     }
 }
