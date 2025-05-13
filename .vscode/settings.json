@@ -6,6 +6,7 @@
         "chrono": "cpp",
         "condition_variable": "cpp",
         "future": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "bitset": "cpp"
     }
 }
