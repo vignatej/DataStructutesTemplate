@@ -27,57 +27,43 @@ using namespace std;
 #define X first
 #define Y second
 #define ll long long
-
 class Solution {
-    public:
-        void print_map(map<int, int> &m){
-            static int k = -1;
-            cout<<"-----------"<<k<<'\n';
-            for(auto &j: m) cout<<j.first<<": "<<j.second<<'\n';
-            cout<<"-----------\n";
-            k++;
-        }
-        void cng_map(map<int, int> &m, int i, int v){
-            auto it = m.lower_bound(i);
-            // auto j = it;
-            // for(;j!=m.end() && j->second <=v;j++){}
-            int s = it->first; int e = m.rbegin()->first;
-            int rl = e+1;
-            while(s<=e){
-                int mid = (s+e)/2;
-                auto it1 = m.lower_bound(mid);
-                if(it1!=m.end() && it1->second <= v){s=mid+1;}
-                else{rl=mid; e=mid-1;}
+public:
+    int jump(vector<int>& nums) {
+        int n = nums.size();
+        // vector<int> v(n, INT_MAX); v[0]=0;
+        // for(int i = 0;i<n-1;i++){
+        //     for(int j = 1;j<=nums[i] && i+j<n;j++) v[i+j]=min(v[i+j], v[i]+1);
+        // }
+        // return v[n-1];
+        if(n==1) return 0;
+        int ans{1};
+        int fart = nums[0];
+        int cp{0};
+        int nf{fart}; cp++;
+        while(cp<n-1 && cp<=fart){
+            while(cp<n-1 && cp<=fart){
+                nf=max(nf, cp+nums[cp]);
+                cp++;
             }
-            m.erase(it, m.lower_bound(rl));
-            m[i]=v;
+            if(cp<=fart) return ans;
+            ans++; fart=nf;
         }
-        int lengthOfLIS(vector<int>& nums) {
-            map<int, int> m; m[-1*(1e5)]=0;
-            int n = nums.size();
-            for(int i = 0;i<n;i++){   
-                // print_map(m);         
-                if(m.size()==0){cng_map(m, nums[i], 1); continue;}
-                auto it = m.lower_bound(nums[i]);
-                if(it!=m.end() && it->first==nums[i]) continue;
-                // if(it==m.begin()){cng_map(m, nums[i], 1);}
-                it--;
-                cng_map(m, nums[i], it->second+1);
-            }
-            // print_map(m); 
-            return m.rbegin()->second;
-        }
-    };
+        return ans;
+    }
+};
+
+
 int main() {
     // cout<<StringChallenge("**+*{2} mmmrrrkbb");
     // string st = "bbbab";
     Solution s;
     // vector<string> d {"a","b","ba","bca","bda","bdca"};
-    vector<int> v1 {0,1,0,3,2,3}; // = {3,1,5,3,1,1};
+    vector<int> v1 {1,2,3}; // = {3,1,5,3,1,1};
     vector<int> v2{2,4};
     vector<vector<int>> v{{0,1},{0,4},{0,5},{1,7},{2,3},{2,4},{2,5},{3,6},{4,6},{4,7},{6,8},{7,8}};
     
-    vector<string> s1{"dog","racer","car"};
+    vector<string> s1{"fooo","barr","wing","ding","wing"};
     vector<string> s2{"a","b","c"};
     vector<char> c1{'a','a','c','d','d','d','g','o','o'};
     vector<vector<int>> v12 {{13,16}};
@@ -85,10 +71,10 @@ int main() {
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
     // cout<<"Hello";
-    // for(auto i: s.longestCommonPrefix(s1, 2)) {
+    // for(auto i: s.findSubstring("lingmindraboofooowingdingbarrwingmonkeypoundcake", s1)) {
     //     cout<<i;
     // }
-    cout<<s.lengthOfLIS(v1);
+    cout<<s.jump(v1);
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";
