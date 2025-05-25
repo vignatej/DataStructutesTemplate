@@ -7,22 +7,28 @@ using namespace std;
 #define PB push_back
 
 signed main(){
-    int t; cin>>t;
-    while(t--){
+    int T; cin>>T;
+    while(T--){
         int n; cin>>n;
-        int oc{0}, zc{0}; bool ans = 1;
-        int p; cin>>p; if(p==1) oc++; else zc++;
-        for(int i =1;i<n;i++){
-            int c; cin>>c;
-            if(c==1) oc++;
-            else zc++;
-            if(p==0 && c==0) ans=false;
-            p=c;
+        VI v(n); for(int i =0;i<n;i++) cin>>v[i];
+        sort(v.begin(), v.end());
+        int ans = n-1;
+        int l = n-1;
+        while(l>=0 && v[l]%2==1) l--;
+        if(l!=-1){
+            // dont consider
+            int s{0};
+            while(s<n && v[s]%2==1) s++;
+            ans=min(ans, n-1-l+s);
         }
-        if(oc==n) ans=false;
-        if(!ans) cout<<"YES";
-        else cout<<"NO";
-        cout<<'\n';
+        l=n-1;
+        while(l>=0 && v[l]%2==0) l--;
+        if(l!=-1){
+            int s{0};
+            while(s<n && v[s]%2==0) s++;
+            ans=min(ans, n-1-l+s);
+        }
+        cout<<ans<<'\n';
     }
 
     return 0;
