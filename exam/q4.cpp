@@ -1,42 +1,117 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
-#define int ll
+#define LL long long
+#define int LL
 #define VVI vector<vector<int>>
 #define VI vector<int>
 #define PB push_back
 
+class SegmentTreeMin{ public:
+    VI arr; int n;
+    SegmentTreeMin(VI &v){
+        int n = v.size();
+        int nn = 1;
+        while(nn<n) nn=nn<<1;
+        this->n=nn;
+        arr.resize(2*nn, 0);
+        for(int i = 0;i<n;i++) arr[i+nn]=v[i];
+        for(int i = nn-1;i>0;i--) arr[i]=min(arr[2*i],arr[2*i+1]);
+    }
+    int calc_min(int a, int b){
+        a+=n; b+=n;
+        int ans = arr[a];
+        while(a<=b){
+            if(a%2==1){ans=min(ans, arr[a]); a++;}
+            if(b%2==0){ans=min(ans, arr[b]); b--;}
+            a/=2; b/=2;
+        }
+        return ans;
+    }
+    void cng_val(int p, int val){
+        p+=n; arr[p]=val; p/=2;
+        while(p>0){
+            arr[p]=min(arr[2*p], arr[2*p+1]);
+            p/=2;
+        }
+    }
+};
+
+class SegmentTreeMax{ public:
+    VI arr; int n;
+    SegmentTreeMax(VI &v){
+        int n = v.size();
+        int nn = 1;
+        while(nn<n) nn=nn<<1;
+        this->n=nn;
+        arr.resize(2*nn, INT_MAX);
+        for(int i = 0;i<n;i++) arr[i+nn]=v[i];
+        for(int i = nn-1;i>0;i--) arr[i]=max(arr[2*i],arr[2*i+1]);
+    }
+    int calc_max(int a, int b){
+        a+=n; b+=n;
+        int ans = arr[a];
+        while(a<=b){
+            if(a%2==1){ans=max(ans, arr[a]); a++;}
+            if(b%2==0){ans=max(ans, arr[b]); b--;}
+            a/=2; b/=2;
+        }
+        return ans;
+    }
+    void cng_val(int p, int val){
+        p+=n; arr[p]=val; p/=2;
+        while(p>0){
+            arr[p]=max(arr[2*p], arr[2*p+1]);
+            p/=2;
+        }
+    }
+};
+
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n, m; cin>>n>>m;
-        VI v(n+1, 0); for(int i =1;i<=n;i++) cin>>v[i];
-        map<int, VVI> edges;
-        for(int i=1;i<=m;i++){
-            int a, b, w; cin>>a>>b>>w;
-            edges[a].PB({b, w});
+        int n; cin>>n;
+        VI x(n), y(n); int xs{0}, ys{0};
+        for(int i = 0;i<n;i++){
+            int a, b; cin>>a>>b;
+            x[i]=a; y[i]=b;
+            xs+=a; ys+=b;
         }
-        priority_queue<VI> pq;
-        pq.push({0, 0, 1}); bool ans = false;
-        while(pq.size()){
-            auto t = pq.top();
-            int max_on_path = -1*t[0];
-            int tot_on_nod = t[1];
-            int node = t[2];
-            pq.pop();
-            if(node==n){
-                cout<<max_on_path<<'\n';
-                ans=1; break;
-            }
-            for(auto &i: edges[node]){
-                int b = i[0]; int w = i[1];
-                int nt = tot_on_nod + v[node];
-                int mp = max(max_on_path, w);
-                if(nt<w) continue;
-                pq.push({-1*mp, nt, b});
-            }
+        if(n==1){
+            cout<<1<<'\n';
+            continue;
         }
-        if(!ans) cout<<"-1\n";
+        int ans = LLONG_MAX;
+        SegmentTreeMin xmin(x), ymin(y);
+        SegmentTreeMax xmax(x), ymax(y);
+        for(int i = 0;i<n;i++){
+            int cx = x[i]; int cy = y[i];
+            int xavg = (xs-cx)/(n-1);
+            int yavg = (ys-cy)/(n-1);
+            xmin.cng_val(i, xavg);
+            xmax.cng_val(i, xavg);
+            ymin.cng_val(i, yavg);
+            ymax.cng_val(i, yavg);
+            int cx_min = xmin.calc_min(0, n-1);
+            int cx_max = xmax.calc_max(0, n-1);
+            
+            int cy_min = ymin.calc_min(0, n-1);
+            int cy_max = ymax.calc_max(0, n-1);
+            xmin.cng_val(i, cx);
+            xmax.cng_val(i, cx);
+            ymin.cng_val(i, cy);
+            ymax.cng_val(i, cy);
+
+            int xd = cx_max - cx_min + 1;
+            int yd = cy_max - cy_min + 1;
+            
+            int cans = xd*yd;
+            if(xd*yd<n){
+                cans = min((xd+1)*yd, xd*(yd+1));
+            }
+            ans=min(ans, cans);
+        }
+        cout<<ans<<'\n';
+
     }
 
     return 0;

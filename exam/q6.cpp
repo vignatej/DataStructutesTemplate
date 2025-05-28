@@ -1,69 +1,92 @@
-#include <iostream>
-#include <vector>
-#include <deque>
-#include <string>
-#include <algorithm>
-#include <map>
-#include <limits>
-#include <utility>
-#include <cmath>
-#include <list>
-#include <sstream>
-#include <set>
-#include <numeric>
-#include <bitset>
-#include <chrono>
-#define pii pair<int, int>
+#include <bits/stdc++.h>
 using namespace std;
-#define ll long long
-#define vi vector<int>
+#define LL long long
+#define int LL
+#define VVI vector<vector<int>>
+#define VI vector<int>
+#define PB push_back
 
-class graph{
-public: 
-    class node{public:
-        int v{0}; vector<int> c;
-    };
-    vector<node> nodes; int n;
-    graph(int n){
-        nodes.resize(n+1); this->n=n;
-        for(int i = 1;i<=n;i++) nodes[i].v = i;
-    }
-    void insert(vector<int> &v){
-        for(int i = 1;i<n-1;i++) nodes[v[i]].c.push_back(v[i+1]);
-    }
-    bool check(){
-        vector<int> innode(n+1, 0);
-        for(auto &i: nodes) for(auto &j: i.c) innode[j]++;
-        deque<int> q;
-        for(int i = 1;i<=n;i++) if(innode[i]==0) q.push_back(i);
-        bool ans = false;
-        int visited = 0;
-        while(q.size()){
-            visited++;
-            int a = q.front();q.pop_front();
-            for(auto &c: nodes[a].c){
-                innode[c]--;
-                if(innode[c]==0)q.push_back(c);
-            } 
-        }
-        return visited==n;
-    }
-};
 
-int main(int argc, char const *argv[]){
-    int T; cin>>T;
-    while(T--){
-        int n, k; cin>>n>>k;
-        vector<vector<int>> v;
-        for(int k1 = 0; k1<k;k1++){
-            v.push_back({});
-            for(int i = 0;i<n;i++){
-                int val; cin>>val;
-                v.back().push_back(val);
+int solve(vector<int> &v, int thres){
+    int n = v.size();
+    if(n==0) return 0;
+    VVI dp((1<<n), VI(2));
+    dp[0][0]=1; dp[0][1]=1;;
+    for(int i =1;i<(1<<n);i++){
+        // dp[i]={n+1, 0};
+        dp[i][0]=n+1; dp[i][1]=0;
+        for(int j = 0;j<n;j++){
+            if(!(i&(1<<j))) continue;
+            int prev = i^(1<<j);
+            VI &last = dp[prev];
+            // VI cb = dp[i];
+            VI cb(2);
+            if(last[1]*v[j]<=thres){
+                cb[0]=last[0];
+                cb[1]=last[1]*v[j];
+            }else{
+                cb[0]=last[0]+1;
+                cb[1]=min(v[j], last[1]);
             }
+            dp[i] = min(dp[i], cb);
         }
-        graph g(n);
-        for(auto &i: v){g.insert(i);}
-        cout<<(g.check() ? "Yes":"No")<<"\n";
     }
+    return dp[(1<<n) - 1][0];
+}
+
+
+signed main(){
+    int T; cin>>T;
+    VI is_p(1e6+1, 1);
+    VI primes;
+    for(int i =2;i<is_p.size();i++){
+        if(!is_p[i]) continue;
+        primes.PB(i);
+        for(int j = i*2;j<is_p.size();j+=i) is_p[j]=0;
+    }
+    while(T--){
+        int x, y, k; cin>>x>>y>>k;
+        map<int, int> xm;
+        map<int, int> ym;
+        for(auto &i: primes){
+            while(x%i==0){
+                x/=i;
+                xm[i]++;
+            }
+            if(x==1) break;
+        }
+        for(auto &i: primes){
+            while(y%i==0){
+                y/=i;
+                ym[i]++;
+            }
+            if(y==1) break;
+        }
+        
+        VI prod, div;
+        for(auto &i: ym){
+            int a = i.first; int b = i.second;
+            if(xm[a]>=b) continue;
+            for(int j = 0;j<b-xm[a]; j++) prod.PB(a);
+        }
+        for(auto &i: xm){
+            int a = i.first; int b = i.second;
+            if(ym[a]>=b) continue;
+            for(int j = 0;j<b-ym[a];j++) div.PB(a);
+        }
+        bool is_a = 1;
+        for(auto &i: prod) if(i>k) is_a=false;
+        for(auto &i: div) if(i>k) is_a=false;
+        if(!is_a){
+            cout<<-1<<'\n';
+            continue;
+        }
+        int ans = prod.size()+div.size();
+        map<multiset<int>, int> m1;
+        ans = solve(prod, k);
+        ans += solve(div, k);
+        cout<<ans<<'\n';
+    }
+
+    return 0;
 }

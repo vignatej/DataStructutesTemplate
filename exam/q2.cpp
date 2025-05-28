@@ -9,18 +9,22 @@ using namespace std;
 signed main(){
     int T; cin>>T;
     while(T--){
-        string s; cin>>s;
-        vector<int> v;
-        int c{0};
-        for(auto &i: s){
-            if(i=='('){
-                v.push_back(i);
-            }else{
-                v.pop_back();
-                if(v.size()==0) c++;
-            }
+        int n, k; cin>>n>>k;
+        int oc{0}, zc{0};
+        for(int i = 0;i<n;i++){
+            char c; cin>>c;
+            if(c=='1') oc++;
+            else zc++;
         }
-        cout<<(c>1 ? "YES":"NO")<<'\n';
+        int min_p = (max(oc, zc)-min(oc, zc))/2;
+        int max_p = (oc/2)+(zc/2);
+        bool ans = 1;
+        if(k<min_p || max_p<k) ans=0;
+        else{
+            if((k-min_p)%2!=0) ans=0;
+        }
+        if(ans) cout<<"YES\n";
+        else cout<<"NO\n";
     }
 
     return 0;
