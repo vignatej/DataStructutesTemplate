@@ -6,112 +6,56 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
-class SegmentTreeMin{ public:
-    VI arr; int n;
-    SegmentTreeMin(VI &v){
-        int n = v.size();
-        int nn = 1;
-        while(nn<n) nn=nn<<1;
-        this->n=nn;
-        arr.resize(2*nn, 0);
-        for(int i = 0;i<n;i++) arr[i+nn]=v[i];
-        for(int i = nn-1;i>0;i--) arr[i]=min(arr[2*i],arr[2*i+1]);
-    }
-    int calc_min(int a, int b){
-        a+=n; b+=n;
-        int ans = arr[a];
-        while(a<=b){
-            if(a%2==1){ans=min(ans, arr[a]); a++;}
-            if(b%2==0){ans=min(ans, arr[b]); b--;}
-            a/=2; b/=2;
-        }
-        return ans;
-    }
-    void cng_val(int p, int val){
-        p+=n; arr[p]=val; p/=2;
-        while(p>0){
-            arr[p]=min(arr[2*p], arr[2*p+1]);
-            p/=2;
-        }
-    }
-};
-
-class SegmentTreeMax{ public:
-    VI arr; int n;
-    SegmentTreeMax(VI &v){
-        int n = v.size();
-        int nn = 1;
-        while(nn<n) nn=nn<<1;
-        this->n=nn;
-        arr.resize(2*nn, INT_MAX);
-        for(int i = 0;i<n;i++) arr[i+nn]=v[i];
-        for(int i = nn-1;i>0;i--) arr[i]=max(arr[2*i],arr[2*i+1]);
-    }
-    int calc_max(int a, int b){
-        a+=n; b+=n;
-        int ans = arr[a];
-        while(a<=b){
-            if(a%2==1){ans=max(ans, arr[a]); a++;}
-            if(b%2==0){ans=max(ans, arr[b]); b--;}
-            a/=2; b/=2;
-        }
-        return ans;
-    }
-    void cng_val(int p, int val){
-        p+=n; arr[p]=val; p/=2;
-        while(p>0){
-            arr[p]=max(arr[2*p], arr[2*p+1]);
-            p/=2;
-        }
-    }
-};
-
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        VI x(n), y(n); int xs{0}, ys{0};
+        int n, m; cin>>n>>m;
+        VI v(m); for(int i = 0;i<m;i++) cin>>v[i];
+        sort(v.begin(), v.end(), [](int a, int b){
+            return (a/100)<(b/100);
+        });
+        VVI ans(n, VI(6, 0));
+        int j = 0;
         for(int i = 0;i<n;i++){
-            int a, b; cin>>a>>b;
-            x[i]=a; y[i]=b;
-            xs+=a; ys+=b;
-        }
-        if(n==1){
-            cout<<1<<'\n';
-            continue;
-        }
-        int ans = LLONG_MAX;
-        SegmentTreeMin xmin(x), ymin(y);
-        SegmentTreeMax xmax(x), ymax(y);
-        for(int i = 0;i<n;i++){
-            int cx = x[i]; int cy = y[i];
-            int xavg = (xs-cx)/(n-1);
-            int yavg = (ys-cy)/(n-1);
-            xmin.cng_val(i, xavg);
-            xmax.cng_val(i, xavg);
-            ymin.cng_val(i, yavg);
-            ymax.cng_val(i, yavg);
-            int cx_min = xmin.calc_min(0, n-1);
-            int cx_max = xmax.calc_max(0, n-1);
-            
-            int cy_min = ymin.calc_min(0, n-1);
-            int cy_max = ymax.calc_max(0, n-1);
-            xmin.cng_val(i, cx);
-            xmax.cng_val(i, cx);
-            ymin.cng_val(i, cy);
-            ymax.cng_val(i, cy);
-
-            int xd = cx_max - cx_min + 1;
-            int yd = cy_max - cy_min + 1;
-            
-            int cans = xd*yd;
-            if(xd*yd<n){
-                cans = min((xd+1)*yd, xd*(yd+1));
+            if(i%2==1){
+                ans[i][0]=ans[i-1][1];ans[i][1]=ans[i-1][0];
+                ans[i][2]=ans[i-1][1];ans[i][3]=ans[i-1][0];
+                ans[i][4]=ans[i-1][1];ans[i][5]=ans[i-1][0];
+                continue;
             }
-            ans=min(ans, cans);
+            ans[i][0]=v[j];ans[i][1]=v[m-1-j];
+            ans[i][2]=v[j];ans[i][3]=v[m-1-j];
+            ans[i][4]=v[j];ans[i][5]=v[m-1-j];
+            j++;
         }
-        cout<<ans<<'\n';
+        
+        for(auto &i: ans){
+            for(auto j: i) cout<<j<<' ';
+            cout<<'\n';
+        }
 
+
+        // VI first, second;
+        // for(int i = 0;i<(n/2 + n%2);i++) first.PB(v[i]);
+        // for(int i = 0;i<n/2;i++) second.PB(v[m-(n/2)+i]);
+        // VVI ans(n, VI(6));
+        // bool f = 1;
+        // for(int j = 0;j<6;j++){
+        //     if(f){
+        //         int i;
+        //         for(i = 0;i<(n/2 + n%2);i++) ans[i][j]=first[i];
+        //         for(;i<n;i++) ans[i][j]=second[i-(n/2)-(n%2)];
+        //     }else{
+        //         int i;
+        //         for(i = 0;i<(n/2);i++) ans[i][j]=second[i];
+        //         for(;i<n;i++) ans[i][j]=first[i-(n/2)];
+        //     }
+        //     f=!f;
+        // }
+        // for(auto &i: ans){
+        //     for(auto j: i) cout<<j<<' ';
+        //     cout<<'\n';
+        // }
     }
 
     return 0;

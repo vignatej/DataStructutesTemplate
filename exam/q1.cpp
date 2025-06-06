@@ -9,14 +9,21 @@ using namespace std;
 signed main(){
     int t; cin>>t;
     while(t--){
-        int a; cin>>a;
-        int b = sqrt(a);
-        if(b*b==a){
-            cout<<0<<' '<<b<<'\n';
-        }else{
-            cout<<-1<<'\n';
+        int x; cin>>x;
+        VI v{x,x,x};
+        int ans{0};
+        while(v[0]!=0 || v[1]!=0 || v[2]!=0){
+            if(v[0]==v[1] && v[1]==v[2]){
+                v[0]/=2;
+            }else if(v[0]==v[1]){
+                v[2]/=4;
+            }else if(v[1]==v[2]){
+                v[1]/=2;
+            }
+            sort(v.begin(), v.end());
+            ans++;
         }
-
+        cout<<ans<<'\n';
     }
 
     return 0;

@@ -9,40 +9,51 @@ using namespace std;
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        VI vals(n+1, 0); 
-        for(int i =1;i<=n;i++) cin>>vals[i];
-        map<int, set<int>> nex;
-        for(int i =1;i<n;i++){
-            int a, b; cin>>a>>b;
-            nex[a].insert(b);
-            nex[b].insert(a);
+        int n, m; cin>>n>>m;
+        vector<char> v(n);
+        for(int i = 0;i<n;i++){
+            cin>>v[i];
         }
-        VI par(n+1, 0);
-        queue<int> q; q.push(1);
-        while(q.size()){
-            int t = q.front(); q.pop();
-            for(auto &i: nex[t]){
-                nex[i].erase(t);
-                q.push(i);
-                par[i]=t;
+        map<string, set<int>> ma;
+        for(int i=0;i<m;i++){
+            char l1, l2; cin>>l1>>l2;
+            string s; s+=l1; s+=l2;
+            ma[s].insert(i);
+        }
+        for(int i=0;i<n;i++){
+            char curr=v[i];
+            if(curr=='a') continue;
+            else if(curr=='b'){
+                if(ma["ba"].size()){
+                    v[i]='a';
+                    ma["ba"].erase(ma["ba"].begin());
+                    continue;
+                }
+                if(ma["bc"].size()==0) continue;
+                int p1 = *ma["bc"].begin();
+                auto it = ma["ca"].upper_bound(p1);
+                if(it==ma["ca"].end()) continue;
+                ma["ca"].erase(it);
+                ma["bc"].erase(ma["bc"].begin());
+                v[i]='a';
+            }else{
+                if(ma["ca"].size()>0){
+                    ma["ca"].erase(ma["ca"].begin());
+                    v[i]='a';
+                    continue;
+                }
+                if(ma["cb"].size()==0) continue;
+                int p = *ma["cb"].begin();
+                ma["cb"].erase(ma["cb"].begin());
+                v[i]='b';
+                auto it = ma["ba"].upper_bound(p);
+                if(it==ma["ba"].end()) continue;
+                ma["ba"].erase(it);
+                v[i]='a';
             }
         }
-        VVI ans(n+1, {0,0});
-        VI curr{1};
-        while(curr.size()>0){
-            VI next;
-            for(auto c: curr){
-                int p = par[c];
-                ans[c][0]=max(vals[c], vals[c]-ans[p][1]);
-                ans[c][1]=min(vals[c], vals[c]-ans[p][0]);
-                for(auto ne: nex[c]) next.PB(ne);
-            }
-            curr=next;
-        }
-        for(int i =1;i<=n;i++) cout<<ans[i][0]<<' ';
+        for(auto i: v) cout<<i;
         cout<<'\n';
-
     }
 
     return 0;
