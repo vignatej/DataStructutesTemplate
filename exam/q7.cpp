@@ -6,95 +6,72 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
-class segment_tree_min_index{ public:
-    VVI arr; int n;
-    segment_tree_min_index(VI &v){
-        int vs = v.size();
-        n=1; while(n<vs) n=n<<1;
-        arr.resize(2*n, {INT_MAX,0});
-        for(int i = 0;i<vs;i++) arr[n+i]={v[i], i};
-        for(int i = n-1;i>0;i--){
-            arr[i]=min(arr[2*i], arr[2*i+1]);
-        }
-    }
-    int get_min_index(int a, int b){
-        a+=n; b+=n;
-        int ans_v = INT_MAX; int ans_ind = -1;
-        while(a<=b){
-            if(a%2==1){
-                if(ans_v>arr[a][0]){ans_v = arr[a][0]; ans_ind = arr[a][1];}
-                a++;
-            }if(b%2==0){
-                if(ans_v>arr[b][0]){ans_v = arr[b][0]; ans_ind = arr[b][1];}
-                b--;
-            }
-            a/=2; b/=2;
-        }
-        return ans_ind;
-    }
-};
-
-class segment_tree_max_index{ public:
-    VVI arr; int n;
-    segment_tree_max_index(VI &v){
-        int vs = v.size();
-        n=1; while(n<vs) n=n<<1;
-        arr.resize(2*n, {-1,0});
-        for(int i = 0;i<vs;i++) arr[n+i]={v[i], i};
-        for(int i = n-1;i>0;i--){
-            arr[i]=max(arr[2*i], arr[2*i+1]);
-        }
-    }
-    int get_max_index(int a, int b){
-        a+=n; b+=n;
-        int ans_v = -1; int ans_ind = -1;
-        while(a<=b){
-            if(a%2==1){
-                if(ans_v<arr[a][0]){ans_v = arr[a][0]; ans_ind = arr[a][1];}
-                a++;
-            }if(b%2==0){
-                if(ans_v<arr[b][0]){ans_v = arr[b][0]; ans_ind = arr[b][1];}
-                b--;
-            }
-            a/=2; b/=2;
-        }
-        return ans_ind;
-    }
-};
+int get_head(VI &head, int i){
+    if(head[i]==i) return i;
+    head[i]=get_head(head, head[i]);
+    return head[i];
+}
+void unio(VI &head, VI &sizes, int a, int b){
+    a = get_head(head, a); 
+    b = get_head(head, b);
+    if(a==b) return;
+    if(sizes[a]<sizes[b]) swap(a, b);
+    head[b]=a;
+    sizes[a]+=sizes[b];
+}
 
 signed main(){
-    int n; cin>>n;
-    VI v(n); for(int i = 0;i<n;i++) cin>>v[i];
-    VI inc(n, 0), dec(n, 0);
-    for(int i = 1;i<n;i++){
-        if(v[i-1]<=v[i]) inc[i]=inc[i-1]+1;
-        if(v[i-1]>=v[i]) dec[i]=dec[i-1]+1;
-    }
-    segment_tree_min_index s_min(v);
-    segment_tree_max_index s_max(v);
-    int q; cin>>q;
-    while(q--){
-        int l, r; cin>>l>>r;
-        l--; r--;
-        if(v[l]>v[r]){
-            int ma_i = s_max.get_max_index(l, r);
-            int mi_i = s_min.get_min_index(l, r);
-            if(
-                ma_i-l == inc[ma_i]-inc[l] && 
-                mi_i-ma_i==dec[mi_i]-dec[ma_i] && 
-                r-mi_i==inc[r]-inc[mi_i]
-            ){cout<<"YES\n";}
-            else{cout<<"NO\n";}
-        }else{
-            int ma_i = s_max.get_max_index(l, r);
-            int mi_i = s_min.get_min_index(l, r);
-            if(
-                mi_i-l == dec[mi_i]-dec[l] && 
-                ma_i-mi_i==inc[ma_i]-inc[mi_i] && 
-                r-ma_i==dec[r]-dec[ma_i]
-            ){cout<<"YES\n";}
-            else{cout<<"NO\n";}
+    int T; cin>>T;
+    while(T--){
+        int n, m; cin>>n>>m;
+        vector<vector<int>> edges;
+        for(int i = 0;i<m;i++){
+            int a, b, w; cin>>a>>b>>w;
+            edges.PB({a, b, w});
         }
+        sort(edges.begin(), edges.end(), [](VI &a, VI &b){
+            return a[2]<b[2];
+        });
+        VI head(n+1, 0), sizes(n+1, 1);
+        for(int i = 0;i<=n;i++) head[i]=i;
+        VVI mst;
+        vector<vector<vector<int>>> ng(n+1);
+        for(auto &i: edges){
+            int a{i[0]}, b{i[1]}, w{i[2]};
+            if(get_head(head, a)==get_head(head, b)) continue;
+            mst.PB(i);
+            unio(head, sizes, a, b);
+            ng[a].PB({b, w});
+            ng[b].PB({a, w});
+        }
+
+        vector<bool> comp(n+1, false);
+        VI min_wts(n+1, INT_MAX), max_wts(n+1, 0);
+        priority_queue<vector<int>> pq; pq.push({1, INT_MAX,0});
+        while(pq.size()){
+            int min_wt = pq.top()[1]; 
+            int max_wt = pq.top()[2];
+            int cn = pq.top()[0];
+            pq.pop();
+            if(comp[cn]) continue;
+            min_wts[cn]=min(min_wts[cn], min_wt);
+            max_wts[cn]=max(max_wts[cn], max_wt);
+            comp[cn]=1;
+            for(auto &i: ng[cn]){
+                int nn = i[0]; int cw = i[1];
+                if(comp[nn]) continue;
+                pq.push({nn, min(min_wt, cw), max(max_wt, cw)});
+            }
+        }
+
+        int mi = min_wts[n]; int ma = max_wts[n];
+        int ans = mi+ma;
+        for(int i = 2;i<=n;i++){
+            int cans = min(mi, min_wts[i])+max(ma, max_wts[i]);
+            ans = min(ans, cans);
+        }
+        cout<<ans<<'\n';
     }
+
     return 0;
 }

@@ -9,51 +9,41 @@ using namespace std;
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n, m; cin>>n>>m;
-        vector<char> v(n);
-        for(int i = 0;i<n;i++){
-            cin>>v[i];
+        int n; cin>>n;
+        VI v1(n), v2(n);
+        for(int i = 0;i<n;i++) cin>>v1[i];
+        for(int i = 0;i<n;i++) cin>>v2[i];
+        if(v1[n-1]==v2[n-1]){ 
+            cout<<n<<'\n';
+            continue;
         }
-        map<string, set<int>> ma;
-        for(int i=0;i<m;i++){
-            char l1, l2; cin>>l1>>l2;
-            string s; s+=l1; s+=l2;
-            ma[s].insert(i);
-        }
-        for(int i=0;i<n;i++){
-            char curr=v[i];
-            if(curr=='a') continue;
-            else if(curr=='b'){
-                if(ma["ba"].size()){
-                    v[i]='a';
-                    ma["ba"].erase(ma["ba"].begin());
-                    continue;
+        map<int, int> m;
+        bool comp = false;
+        for(int i = n-1;i>=0 && !comp;i--){
+            if(m[v1[i]]){
+                if(m[v1[i]]==1 && v2[i+1]==v1[i]){
+
+                }else{
+                    cout<<i+1<<'\n';
+                    comp=1;
+                    break;
                 }
-                if(ma["bc"].size()==0) continue;
-                int p1 = *ma["bc"].begin();
-                auto it = ma["ca"].upper_bound(p1);
-                if(it==ma["ca"].end()) continue;
-                ma["ca"].erase(it);
-                ma["bc"].erase(ma["bc"].begin());
-                v[i]='a';
-            }else{
-                if(ma["ca"].size()>0){
-                    ma["ca"].erase(ma["ca"].begin());
-                    v[i]='a';
-                    continue;
+            } 
+            m[v1[i]]++;
+            if(m[v2[i]]){
+                if(m[v2[i]]==1 && v1[i+1]==v2[i]){
+
+                }else{
+                    cout<<i+1<<'\n';
+                    comp=1;
+                    break;
                 }
-                if(ma["cb"].size()==0) continue;
-                int p = *ma["cb"].begin();
-                ma["cb"].erase(ma["cb"].begin());
-                v[i]='b';
-                auto it = ma["ba"].upper_bound(p);
-                if(it==ma["ba"].end()) continue;
-                ma["ba"].erase(it);
-                v[i]='a';
-            }
+            } 
+            m[v2[i]]++;
         }
-        for(auto i: v) cout<<i;
-        cout<<'\n';
+        if(comp) continue;
+        cout<<0<<'\n';
+
     }
 
     return 0;

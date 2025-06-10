@@ -9,53 +9,16 @@ using namespace std;
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n, m; cin>>n>>m;
-        VI v(m); for(int i = 0;i<m;i++) cin>>v[i];
-        sort(v.begin(), v.end(), [](int a, int b){
-            return (a/100)<(b/100);
-        });
-        VVI ans(n, VI(6, 0));
-        int j = 0;
-        for(int i = 0;i<n;i++){
-            if(i%2==1){
-                ans[i][0]=ans[i-1][1];ans[i][1]=ans[i-1][0];
-                ans[i][2]=ans[i-1][1];ans[i][3]=ans[i-1][0];
-                ans[i][4]=ans[i-1][1];ans[i][5]=ans[i-1][0];
-                continue;
-            }
-            ans[i][0]=v[j];ans[i][1]=v[m-1-j];
-            ans[i][2]=v[j];ans[i][3]=v[m-1-j];
-            ans[i][4]=v[j];ans[i][5]=v[m-1-j];
-            j++;
+        int n; cin>>n;
+        VI v(n+1, 0); for(int i = 1;i<=n;i++) cin>>v[i];
+        int k2 = (2*v[1]-v[2])/(n+1);
+        int k1 = k2+v[2]-v[1];
+        VI gen(n+1, 0);
+        for(int i = 1;i<=n;i++){
+            gen[i]=i*k1+(n-i+1)*k2;
         }
-        
-        for(auto &i: ans){
-            for(auto j: i) cout<<j<<' ';
-            cout<<'\n';
-        }
-
-
-        // VI first, second;
-        // for(int i = 0;i<(n/2 + n%2);i++) first.PB(v[i]);
-        // for(int i = 0;i<n/2;i++) second.PB(v[m-(n/2)+i]);
-        // VVI ans(n, VI(6));
-        // bool f = 1;
-        // for(int j = 0;j<6;j++){
-        //     if(f){
-        //         int i;
-        //         for(i = 0;i<(n/2 + n%2);i++) ans[i][j]=first[i];
-        //         for(;i<n;i++) ans[i][j]=second[i-(n/2)-(n%2)];
-        //     }else{
-        //         int i;
-        //         for(i = 0;i<(n/2);i++) ans[i][j]=second[i];
-        //         for(;i<n;i++) ans[i][j]=first[i-(n/2)];
-        //     }
-        //     f=!f;
-        // }
-        // for(auto &i: ans){
-        //     for(auto j: i) cout<<j<<' ';
-        //     cout<<'\n';
-        // }
+        if(k1>=0 && k2>=0 && v==gen) cout<<"YES\n";
+        else cout<<"NO\n";
     }
 
     return 0;

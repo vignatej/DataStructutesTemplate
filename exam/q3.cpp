@@ -11,13 +11,21 @@ signed main(){
     while(T--){
         int n; cin>>n;
         VI v(n); for(int i = 0;i<n;i++) cin>>v[i];
-        int ans = LLONG_MAX;
-        for(int i = 0;i<n;){
-            int j = i;
-            while(j<n && v[i]==v[j]) j++;
-            int cans = i*v[i]+(n-j)*v[i];
-            ans = min(ans, cans);
-            i=j;
+        int ans{1}; set<int> cs{v[0]};
+        int cp = 1;
+        while(cp<n){
+            int j = cp;
+            while(cs.size()>0 && j<n){
+                if(cs.find(v[j])!=cs.end())
+                    cs.erase(v[j]);
+                j++;
+            }
+            if(cs.size()!=0) break;
+            ans++;
+            while(cp<j){
+                cs.insert(v[cp]);
+                cp++;
+            }
         }
         cout<<ans<<'\n';
     }
