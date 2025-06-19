@@ -6,44 +6,72 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
+int solve(string &s1, string &s2, string &cs){
+    int pos = cs.size();
+    int n = s1.size();
+    if(pos==n){
+        int ans{0};
+        for(int i = 0;i<n;i++) if(s1[i]==cs[i]) ans++;
+        for(int i = 0;i<n;i++) if(s2[i]==cs[i]) ans++;
+        return ans;
+    }
+    if(s1.substr(0, pos)==cs && s2.substr(0, pos)==cs){
+        int ans = 100;
+        char c1{s1[pos]}, c2{s2[pos]};
+        if(c1>c2) swap(c1, c2);
+        if(c1==c2){
+            cs.push_back(c1);
+            ans = min(ans, solve(s1, s2, cs));
+            cs.pop_back();
+            return ans;
+        }
+        cs.push_back(c1+1);
+        ans = min(ans, solve(s1, s2, cs));
+        cs.pop_back();
+        cs.push_back(c1);
+        ans = min(ans, solve(s1, s2, cs));
+        cs.pop_back();
+        return ans;
+    }else if(s1.substr(0, pos)==cs){
+        int ans = 100;
+        char c1{s1[pos]};
+        while(c1<='9' && (c1==s1[pos] || c1==s2[pos])) c1++;
+        c1 = min(c1, '9');
+        cs.push_back(c1);
+        ans = min(ans, solve(s1, s2, cs));
+        cs.pop_back();
+        return ans;
+    }else if(s2.substr(0, pos)==cs){
+        int ans = 100;
+        char c1{s2[pos]};
+        while(c1>='0' && (c1==s1[pos] || c1==s2[pos])) c1--;
+        c1 = max(c1, '0');
+        cs.push_back(c1);
+        ans = min(ans, solve(s1, s2, cs));
+        cs.pop_back();
+        return ans;
+    }else{
+        int ans = 100;
+        char c1{'0'};
+        while(c1<='9' && (c1==s1[pos] || c1==s2[pos])) c1++;
+        c1 = min(c1, '9');
+        cs.push_back(c1);
+        ans = min(ans, solve(s1, s2, cs));
+        cs.pop_back();
+        return ans;
+    }
+}
+
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        VI v1(n), v2(n);
-        for(int i = 0;i<n;i++) cin>>v1[i];
-        for(int i = 0;i<n;i++) cin>>v2[i];
-        if(v1[n-1]==v2[n-1]){ 
-            cout<<n<<'\n';
-            continue;
-        }
-        map<int, int> m;
-        bool comp = false;
-        for(int i = n-1;i>=0 && !comp;i--){
-            if(m[v1[i]]){
-                if(m[v1[i]]==1 && v2[i+1]==v1[i]){
-
-                }else{
-                    cout<<i+1<<'\n';
-                    comp=1;
-                    break;
-                }
-            } 
-            m[v1[i]]++;
-            if(m[v2[i]]){
-                if(m[v2[i]]==1 && v1[i+1]==v2[i]){
-
-                }else{
-                    cout<<i+1<<'\n';
-                    comp=1;
-                    break;
-                }
-            } 
-            m[v2[i]]++;
-        }
-        if(comp) continue;
-        cout<<0<<'\n';
-
+        string s1, s2; cin>>s1>>s2;
+        if(s1.size() > s2.size()) swap(s1, s2);
+        while(s1.size() < s2.size()) s1='0'+s1;
+        if(s1>s2) swap(s1, s2);
+        string cs;
+        int ans = solve(s1, s2, cs);
+        cout<<ans<<'\n';
     }
 
     return 0;

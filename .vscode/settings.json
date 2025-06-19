@@ -7,6 +7,9 @@
         "condition_variable": "cpp",
         "future": "cpp",
         "type_traits": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "iosfwd": "cpp",
+        "algorithm": "cpp",
+        "format": "cpp"
     }
 }

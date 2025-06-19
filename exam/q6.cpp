@@ -1,77 +1,86 @@
-#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <iostream>
 using namespace std;
+using namespace __gnu_pbds;
+template <class T> using ordered_set = tree<T, null_type,
+less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+
+template <class T> using multi_ordered_set = tree<T, null_type, 
+less_equal<T>, rb_tree_tag,tree_order_statistics_node_update>;
+
+
 #define LL long long
 #define int LL
 #define VVI vector<vector<int>>
 #define VI vector<int>
 #define PB push_back
-const int M = 1e9+7;
-int powl(int a, int b){
-    if(b==0) return 1;
-    if(b==1) return a;
-    if(a==0) return a;
-    int ans = powl(a, b/2);
-    ans*=ans; ans%=M;
-    if(b%2){ ans*=a; ans%=M;}
-    return ans;
-}
 
-void resolve(VVI &g){
-    int n = g.size();
-    queue<int> q; q.push(1);
-    while(q.size()){
-        int t = q.front();
-        q.pop();
-        for(auto &i: g[t]){
-            auto it = find(g[i].begin(), g[i].end(), t);
-            if(it != g[i].end()) g[i].erase(it);
-            q.push(i);
+void solve(int n, int s, int x, VI &v){
+    VI pme(n+1, 0), nm(n+1, n+1);
+    vector<int> st{0};
+    for(int i = 1;i<=n;i++){
+        while(v[st.back()]<v[i]) st.pop_back();
+        pme[i]=st.back();
+        st.PB(i);
+    }
+    st.clear();
+    st.PB(n+1);
+    for(int i = n;i>0;i--){
+        while(v[st.back()]<=v[i]) st.pop_back();
+        nm[i]=st.back();
+        st.PB(i);
+    }
+    VI ps{0};
+    for(int i = 1;i<=n;i++) ps.PB(ps.back()+v[i]);
+    // multi_ordered_set<pair<int, int>> np;
+    set<int> np; map<int, int> fc;
+    int nps{-1}, npe{-1};
+    int ans{0};
+    for(int i =1;i<=n;i++){
+        if(v[i]!=x) continue;
+        if(npe<i){
+            np.clear(); fc.clear();
+            for(int j = i;j<nm[i];j++){ 
+                np.insert(ps[j]); fc[ps[j]]++;
+            }
+            nps=i; npe=nm[i]-1;
+        }else{
+            while(nps<i){
+                // np.erase(np.find({ps[nps], nps}));
+                fc[ps[nps]]--;
+                if(fc[ps[nps]]==0) np.erase(ps[nps]); 
+                nps++;
+            }
+            for(int j = npe+1;j<nm[i];j++) {
+                np.insert(ps[j]); fc[ps[j]]++;
+                // np.insert({ps[j], j});
+            }
+            npe=nm[i]-1;
+        }
+        for(int j = pme[i]+1;j<=i;j++){
+            int cs = ps[i]-ps[j-1];
+            int rs = s-cs;
+            rs+=ps[i];
+            // int rsp = np.order_of_key({rs, -1});
+            // // if(rsp<np.size() && (*np.find_by_order(rsp))[0]==rs) {
+            //     ans += np.order_of_key({rs+1, -1}) - np.order_of_key({rs, -1});
+            // // }
+            ans+=fc[rs];
         }
     }
+    cout<<ans<<'\n';
 }
 
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        map<int, int> m;
-        VVI g(n+1);
-        for(int i = 0;i<n-1;i++){
-            int p, c; cin>>p>>c;
-            m[p]++; m[c]++;
-            g[p].PB(c);
-            g[c].PB(p);
-        }
-        resolve(g);
-        int lc{0};
-        for(int i =2;i<=n;i++) if(g[i].size()==0) lc++;
-        if(lc>=3){
-            cout<<0<<'\n';
-        }else if(lc==2){
-            int pe = -1;
-            for(int i = 1;i<=n;i++) 
-                if(g[i].size()==2) pe = i;
-            int l1{1}, l2{1};
-            int c1{g[pe][0]}, c2{g[pe][1]};
-            while(g[c1].size()>0){c1=g[c1][0]; l1++;}
-            while(g[c2].size()>0){c2=g[c2][0]; l2++;}
-            int curr = 1; int pl{1};
-            while(curr!=pe){curr=g[curr][0]; pl++;}
-            int ans;
-            if(l1==l2){
-                ans=powl(2, pl+1);
-            }else{
-                int ed = max(l1, l2)-min(l1, l2);
-                ans = powl(2, pl+ed); 
-                ans+=powl(2, pl+ed-1);
-                ans%=M;
-            }
-            cout<<ans<<'\n';
+        int n, s, x; cin>>n>>s>>x;
+        VI v(n+1, LLONG_MAX);
+        for(int i =1;i<=n;i++) cin>>v[i];
+        v.PB(LLONG_MAX);
+        solve(n, s, x, v);
 
-        }else if(lc==1){
-            int ans = powl(2, n);
-            cout<<ans<<'\n';
-        }
     }
 
     return 0;

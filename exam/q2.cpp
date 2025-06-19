@@ -10,14 +10,23 @@ signed main(){
     int T; cin>>T;
     while(T--){
         int n; cin>>n;
-        deque<int> q;
-        while(n>0){
-            if(n%2) q.push_back(n);
-            else q.push_front(n);
-            n--;
+        string s; cin>>s;
+        map<char, int> m;
+        m[s[0]]++; bool ans_f{false};
+        for(int i = 1;i<n;i++){
+            if(i==n-1){
+                // do_it
+                if(m[s[i]]){
+                    if(m[s[i]]==1 && s[i]==s[0]){}
+                    else{ans_f = true;}
+                }
+                continue;
+            }
+            if(m[s[i]]>0) ans_f = 1;
+            m[s[i]]++;
         }
-        for(auto &i: q) cout<<i<<' ';
-        cout<<'\n';
+        if(ans_f) cout<<"YES\n";
+        else cout<<"NO\n";
     }
 
     return 0;

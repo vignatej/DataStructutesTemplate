@@ -9,17 +9,17 @@ using namespace std;
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n, x; cin>>n>>x;
-        int fi = -1;
-        VI v(n);
-        for(int i = 0;i<n;i++){
-            cin>>v[i];
-            if(v[i]==1 && fi==-1) fi=i;
+        int n, s; cin>>n>>s;
+        vector<int> v(n);
+        for(int i = 0;i<n;i++) cin>>v[i];
+        sort(v.begin(), v.end());
+        if(s==v[0] || s==v.back()){
+            cout<<v.back()-v.front()<<'\n';
+            continue;
         }
-        fi+=x; bool ya = false;
-        for(int i = fi;i<n;i++) if(v[i]==1) ya=1;
-        if(ya) cout<<"NO\n";
-        else cout<<"YES\n";
+        int ans = abs(s-v[0])+v.back()-v[0];
+        ans = min(ans, abs(v.back()-s)+v.back()-v[0]);
+        cout<<ans<<'\n';
     }
 
     return 0;
