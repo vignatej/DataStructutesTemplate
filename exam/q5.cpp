@@ -6,72 +6,62 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
-int solve(string &s1, string &s2, string &cs){
-    int pos = cs.size();
-    int n = s1.size();
-    if(pos==n){
-        int ans{0};
-        for(int i = 0;i<n;i++) if(s1[i]==cs[i]) ans++;
-        for(int i = 0;i<n;i++) if(s2[i]==cs[i]) ans++;
-        return ans;
-    }
-    if(s1.substr(0, pos)==cs && s2.substr(0, pos)==cs){
-        int ans = 100;
-        char c1{s1[pos]}, c2{s2[pos]};
-        if(c1>c2) swap(c1, c2);
-        if(c1==c2){
-            cs.push_back(c1);
-            ans = min(ans, solve(s1, s2, cs));
-            cs.pop_back();
-            return ans;
-        }
-        cs.push_back(c1+1);
-        ans = min(ans, solve(s1, s2, cs));
-        cs.pop_back();
-        cs.push_back(c1);
-        ans = min(ans, solve(s1, s2, cs));
-        cs.pop_back();
-        return ans;
-    }else if(s1.substr(0, pos)==cs){
-        int ans = 100;
-        char c1{s1[pos]};
-        while(c1<='9' && (c1==s1[pos] || c1==s2[pos])) c1++;
-        c1 = min(c1, '9');
-        cs.push_back(c1);
-        ans = min(ans, solve(s1, s2, cs));
-        cs.pop_back();
-        return ans;
-    }else if(s2.substr(0, pos)==cs){
-        int ans = 100;
-        char c1{s2[pos]};
-        while(c1>='0' && (c1==s1[pos] || c1==s2[pos])) c1--;
-        c1 = max(c1, '0');
-        cs.push_back(c1);
-        ans = min(ans, solve(s1, s2, cs));
-        cs.pop_back();
-        return ans;
-    }else{
-        int ans = 100;
-        char c1{'0'};
-        while(c1<='9' && (c1==s1[pos] || c1==s2[pos])) c1++;
-        c1 = min(c1, '9');
-        cs.push_back(c1);
-        ans = min(ans, solve(s1, s2, cs));
-        cs.pop_back();
-        return ans;
-    }
+int get_hts(int c, vector<set<int>> &g, vector<int> &hts){
+    if(hts[c]!=-1) return hts[c];
+    int ch = 1;
+    for(auto i: g[c]) ch = max(ch, get_hts(i, g, hts));
+    return ch;
 }
+
+int get_child(int c, vector<set<int>> &g, vector<int> &child){
+    if(child[c]!=-1) return child[c];
+    int ch = 1;
+    for(auto i: g[c]) ch += get_child(i, g, child);
+    return ch;
+}
+
+int get_rem_count(int node, int h, vector<set<int>> &g, VI &hts, VI &child){
+    int ans = 0;
+    for(auto &i: g[node]){
+        if(get_hts(i, g, hts)<h-1){
+            ans+=get_child(i, g, child);
+            continue;
+        }
+        ans += get_rem_count(node, h-1, g, hts, child);
+    }
+    return ans;
+}
+
 
 signed main(){
     int T; cin>>T;
     while(T--){
-        string s1, s2; cin>>s1>>s2;
-        if(s1.size() > s2.size()) swap(s1, s2);
-        while(s1.size() < s2.size()) s1='0'+s1;
-        if(s1>s2) swap(s1, s2);
-        string cs;
-        int ans = solve(s1, s2, cs);
-        cout<<ans<<'\n';
+        int n; cin>>n;
+        vector<set<int>> g(n+1); 
+        for(int i=1;i<n;i++){
+            int a, b; cin>>a>>b;
+            g[a].insert(b); g[b].insert(a);
+        }
+        VI curr{1};
+        while(curr.size()>0){
+            VI next;
+            for(auto &i: curr){
+                for(auto &j: g[i]){
+                    g[j].erase(i);
+                    next.push_back(j);
+                }
+            }
+            curr=next;
+        }
+        VI hts(n+1, -1), child(n+1, -1);
+        get_hts(1, g, hts); get_child(1, g, child);
+        int l{1}, r{get_hts(1, g, hts)};
+        int ans = 1;
+        while(l<=r){
+            int m = (l+r)/2;
+            get_rem_count(1, m, )
+        }
+
     }
 
     return 0;

@@ -22,14 +22,13 @@ VI z_func(string &s){
 }
 
 signed main(){
-    string s, p;
-    cin>>s>>p;
-    int sl{s.length()}, pl{p.length()};
-    string overall = p + '$' + s;
-    auto z = z_func(overall);
-    int ans{0};
-    for(auto &i: z) if(i==pl) ans++;
-    cout<<ans;
+    string s; cin>>s;
+    VI z = z_func(s);
+    int n = s.length();
+    for(int i = 0;i<n;i++){
+        if(z[i]==n-i) cout<<i<<' ';
+    }
+    cout<<n;
 
     return 0;
 }

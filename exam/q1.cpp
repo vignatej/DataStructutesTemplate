@@ -9,17 +9,27 @@ using namespace std;
 signed main(){
     int T; cin>>T;
     while(T--){
-        int n, s; cin>>n>>s;
-        vector<int> v(n);
-        for(int i = 0;i<n;i++) cin>>v[i];
-        sort(v.begin(), v.end());
-        if(s==v[0] || s==v.back()){
-            cout<<v.back()-v.front()<<'\n';
+        int n; cin>>n;
+        VI v(n); for(int i = 0;i<n;i++) cin>>v[i];
+        int mtn = v[0];
+        bool ya = 0;
+        for(int i =1;i<n;i++){
+            if(mtn>v[i]) ya=1;
+            mtn = max(mtn, v[i]);
+        }
+        if(!ya){
+            cout<<"NO\n";
             continue;
         }
-        int ans = abs(s-v[0])+v.back()-v[0];
-        ans = min(ans, abs(v.back()-s)+v.back()-v[0]);
-        cout<<ans<<'\n';
+        cout<<"YES\n2\n";
+        mtn=v[0];
+        for(int i =1;i<n;i++){
+            if(mtn>v[i]){
+                cout<<mtn<<" "<<v[i]<<'\n';
+                break;
+            }
+            mtn = max(mtn, v[i]);
+        }
     }
 
     return 0;

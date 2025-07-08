@@ -27,29 +27,47 @@ using namespace std;
 #define X first
 #define Y second
 #define ll long long
+#define VI vector<int>
+#define VVI vector<VI>
+
 class Solution {
 public:
-    int jump(vector<int>& nums) {
-        int n = nums.size();
-        // vector<int> v(n, INT_MAX); v[0]=0;
-        // for(int i = 0;i<n-1;i++){
-        //     for(int j = 1;j<=nums[i] && i+j<n;j++) v[i+j]=min(v[i+j], v[i]+1);
-        // }
-        // return v[n-1];
-        if(n==1) return 0;
-        int ans{1};
-        int fart = nums[0];
-        int cp{0};
-        int nf{fart}; cp++;
-        while(cp<n-1 && cp<=fart){
-            while(cp<n-1 && cp<=fart){
-                nf=max(nf, cp+nums[cp]);
-                cp++;
+    int minMoves(int sx, int sy, int tx, int ty) {
+        vector<pair<int, int>> curr{{tx, ty}};
+        int mv = 1;
+        while(curr.size()){
+            vector<pair<int, int>> next;
+            for(auto &i: curr){
+                int x = i.first; int y = i.second;
+                if(x<sx ||y<sy) continue;
+                if(x==sx && y==sy) return mv-1;
+                if(2*x >= y) next.push_back({x, y-x});
+                if(2*y >= x) next.push_back({x-y, y});
+                if(x>=2*y && x%2==0) next.push_back({x/2, y});
+                if(y>=2*x && y%2==0) next.push_back({x, y/2});
             }
-            if(cp<=fart) return ans;
-            ans++; fart=nf;
+            mv++;
+            curr=next;
         }
-        return ans;
+        return -1;
+        // pair<int, int> req{tx, ty};
+        // set<pair<int, int>> curr{{sx, sy}};
+        // if(req==pair<int, int>{sx, sy}) return 0;
+        // int mv = 0;
+        // while(curr.size()){
+        //     decltype(curr) next;
+        //     for(auto &i: curr){
+        //         int x = i.first; int y = i.second;
+        //         if(x>tx || y>ty) continue;
+        //         if(i==req) return mv;
+        //         int m = max(x, y);
+        //         if(x+m<=tx) next.insert({x+m, y});
+        //         if(y+m<=ty) next.insert({x, y+m});
+        //     }
+        //     curr=next;
+        //     mv++;
+        // }
+        // return -1;
     }
 };
 
@@ -63,18 +81,19 @@ int main() {
     vector<int> v2{2,4};
     vector<vector<int>> v{{0,1},{0,4},{0,5},{1,7},{2,3},{2,4},{2,5},{3,6},{4,6},{4,7},{6,8},{7,8}};
     
-    vector<string> s1{"fooo","barr","wing","ding","wing"};
-    vector<string> s2{"a","b","c"};
+    vector<string> s1{"SAVE20","","PHARMA5","SAVE@20"};
+    vector<string> s2{"restaurant","grocery","pharmacy","restaurant"};
+    vector<bool> isA {1,1,1,1};
     vector<char> c1{'a','a','c','d','d','d','g','o','o'};
     vector<vector<int>> v12 {{13,16}};
-    vector<vector<int>> v13 {{0,0},{1,1},{1,0}};
+    vector<vector<int>> v13 {{0,1,2},{1,2,4}};
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
     // cout<<"Hello";
-    // for(auto i: s.findSubstring("lingmindraboofooowingdingbarrwingmonkeypoundcake", s1)) {
+    // for(auto i: s.validateCoupons(s1, s2, isA)) {
     //     cout<<i;
     // }
-    cout<<s.jump(v1);
+    cout<<s.minMoves(1,2,5,4);
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";
