@@ -7,44 +7,46 @@ using namespace std;
 #define PB push_back
 
 signed main(){
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    #ifndef ONLINE_JUDGE
+        freopen("in.txt", "r", stdin);
+        freopen("out.txt", "w", stdout);
+    #endif
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        VI v(n+1, 1);
-        vector<bool> comp(n+1, 0);
-        vector<int> not_in2;
-        for(int i =2;i<=n;i+=2) comp[i]=1;
-        for(int i = 3;i<=n;i+=2){
-            if(comp[i]) continue;
-            vector<int> allp;
-            for(int j = i;j<=n;j+=i){
-                if(comp[j]) continue;
-                allp.push_back(j);
-                comp[j]=1;
-            }
-            if(allp.size()==1 && i*2<=n){
-                not_in2.push_back(i*2);
-                allp.push_back(i*2);
-            }
-            int cn = allp.size();
-            for(int j = 0;j<cn;j++){
-                v[allp[j]]=allp[(j+1)%cn];
-            }
+        int n, k; cin>>n>>k;
+        vector<set<int>> v(n+1);
+        for(int i = 1;i<n;i++){
+            int a, b; cin>>a>>b;
+            v[a].insert(b); v[b].insert(a);
         }
-        vector<int> two;
-        int j = 0;
-        for(int i = 2;i<=n;i+=2){
-            if(j<not_in2.size() && not_in2[j]==i){
-                j++;
-                continue;
+        vector<int> curr{1};
+        while(curr.size()){
+            VI nex;
+            for(auto i: curr){
+                for(auto j: v[i]){
+                    v[j].erase(i);
+                    nex.push_back(j);
+                }
             }
-            two.push_back(i);
+            curr=nex;
         }
-        int c2n = two.size();
-        for(int i = 0;i<c2n;i++){
-            v[two[i]]=two[(i+1)%c2n];
+        curr.push_back(1);
+        vector<int> ans(n+1, -1); int t = 0;
+        while(curr.size()){
+            if(t%k==0){
+                for(auto i: curr) ans[i]=t/k;
+            }
+            vector<int> nex;
+            for(auto i: curr){
+                for(auto j: v[i]){
+                    nex.push_back(j);
+                }
+            }
+            curr = nex;
+            t++;
         }
-        for(int i =1;i<=n;i++) cout<<v[i]<<' ';
+        for(int i = 2;i<=n;i++) cout<<ans[i]<<' ';
         cout<<'\n';
     }
 

@@ -6,80 +6,49 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
-bool ispallindrome(VI &v){
-    int n = v.size();
-    for(int i = 0;i<n;i++){
-        if(v[i]!=v[n-i-1]) return 0;
-    }
-    return 1;
-}
-
-bool solve(int k, map<int, VI> m){
-    set<pair<int, int>> cp;
-    bool nta{0}; int ntav{0};
-    for(auto &i: m){
-        int ol = cp.size();
-        int cl = i.second.size();
-        if(ol==k) break;
-        if(ol+cl>k){
-            // do_stg;
-            nta=1; ntav=i.first;
-            break;
+int poss(int x, vector<int> &posns, int m){
+    int i = 0; int n = posns.size();
+    int prev = posns[0]-1;
+    for(auto i: posns){
+        if(prev<i){
+            prev = i+x;
+            m--;
         }
-        for(auto j: i.second)
-            cp.insert({j, i.first});
     }
-    VI cs; VI posns;
-    for(auto i: cp){ 
-        cs.PB(i.second);
-        posns.PB(i.first);
+    if(m<0) return -1;
+    int ans{0};
+    for(int i = 0;i<n;){
+        auto it = upper_bound(next(posns.begin(), i), posns.end(), posns[i]+x);
+        it--;
+        ans+=(*it)-posns[i];
+        i=distance(posns.begin(), it)+1;
     }
-    if(!ispallindrome(cs)) return false;
-    if(!nta) return 1;
-    
-    int n = posns.size();
-    posns.push_back(1e6);
-    
-    VI &ntap = m[ntav]; 
-    vector<bool> comp(ntap.size(), 0);
-    int mr = k - cs.size(); int j = ntap.size()-1;
-    for(int i = 0;i<ntap.size() && mr>0 && j>=0;i++){
-        if(comp[i]) continue;
-        if(mr==1){
-            //  do stg
-            if(cs.size()%2) return 0;
-            int cp = ntap[i];
-            auto it = lower_bound(posns.begin(), posns.end(), cp);
-            int d = distance(posns.begin(), it);
-            if(d==cs.size()/2) mr--;
-            continue;
-        }
-        int cp = ntap[i];
-        auto it = lower_bound(posns.begin(), posns.end(), cp);
-        int d = distance(posns.begin(), it);
-        if(d==n) continue;
-        int plb, pub;
-        plb = posns[n-d-1]; 
-        pub = posns[n-d];
-        while(j>=0 && !(comp[j]==0 && plb<=ntap[j] && ntap[j]<=pub)) 
-            j--;
-        if(j<0) break;
-        mr-=2;
-        comp[i]=1; comp[j]=1;
-    }
-    return mr==0;
+    return ans;
 }
 
 signed main(){
-    int T; cin>>T;
-    while(T--){
-        int n, k; cin>>n>>k;
-        VI v(n); for(int i = 0;i<n;i++) cin>>v[i];
-        map<int, VI> m;
-        for(int i = 0;i<n;i++) m[v[i]].PB(i);
-        bool ans = solve(k, m) || solve(k-1, m);
-        cout<<(ans ? "YES":"NO")<<'\n';
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    #ifndef ONLINE_JUDGE
+        freopen("in.txt", "r", stdin);
+        freopen("out.txt", "w", stdout);
+    #endif
+    int n, m; cin>>n>>m;
+    vector<int> posns(n);
+    for(int i = 0;i<n;i++) cin>>posns[i];
+    sort(posns.begin(), posns.end());
+    int l{0},r{(int)1e18};
+    int ans{r};
+    while(l<=r){
+        int mid = (l+r)/2;
+        int cans = poss(mid, posns, m);
+        if(cans!=-1){
+            r=mid-1;
+            ans = min(ans, cans);
+        }else{
+            l=mid+1;
+        }
     }
+    cout<<ans;
 
     return 0;
 }

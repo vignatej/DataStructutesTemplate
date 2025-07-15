@@ -30,47 +30,71 @@ using namespace std;
 #define VI vector<int>
 #define VVI vector<VI>
 
+const long long M = 1e9+7;
 class Solution {
 public:
-    int minMoves(int sx, int sy, int tx, int ty) {
-        vector<pair<int, int>> curr{{tx, ty}};
-        int mv = 1;
-        while(curr.size()){
-            vector<pair<int, int>> next;
-            for(auto &i: curr){
-                int x = i.first; int y = i.second;
-                if(x<sx ||y<sy) continue;
-                if(x==sx && y==sy) return mv-1;
-                if(2*x >= y) next.push_back({x, y-x});
-                if(2*y >= x) next.push_back({x-y, y});
-                if(x>=2*y && x%2==0) next.push_back({x/2, y});
-                if(y>=2*x && y%2==0) next.push_back({x, y/2});
-            }
-            mv++;
-            curr=next;
+    bool isp(string &s){
+        int n = s.length();
+        int i = 0; int j = n-1;
+        while(i<=j){
+            if(s[i]!=s[j]) return false;
+            i++; j--;
         }
-        return -1;
-        // pair<int, int> req{tx, ty};
-        // set<pair<int, int>> curr{{sx, sy}};
-        // if(req==pair<int, int>{sx, sy}) return 0;
-        // int mv = 0;
-        // while(curr.size()){
-        //     decltype(curr) next;
-        //     for(auto &i: curr){
-        //         int x = i.first; int y = i.second;
-        //         if(x>tx || y>ty) continue;
-        //         if(i==req) return mv;
-        //         int m = max(x, y);
-        //         if(x+m<=tx) next.insert({x+m, y});
-        //         if(y+m<=ty) next.insert({x, y+m});
-        //     }
-        //     curr=next;
-        //     mv++;
-        // }
-        // return -1;
+        return 1;
+    }
+    // vector<long long> ppow{1};
+    int get_hv(string &cs){
+        long long p = 31; long long ppow=1;
+        long long hv = 0;
+        for(auto &i: cs){
+            hv=(hv+((i-'a'+1)*ppow)%M)%M;
+            ppow*=p;
+        }
+        return hv;
+    }
+    vector<map<int, int>> dp;
+    int dfs(int curr, string &cs , int &visited, 
+                vector<vector<int>> &g, string &label){
+        // visited.insert(curr);
+        visited|=(1<<curr);
+        cs.push_back(label[curr]);
+        int hv = get_hv(cs);
+        if(dp[curr][hv]){ 
+            visited^=(1<<curr);
+            cs.pop_back();
+            return dp[curr][hv];
+        }
+        int ans{0};
+        if(isp(cs)) ans = cs.size();
+        // if(ans==5) cout<<cs<<' ';
+        for(auto i: g[curr]){
+            if(visited & (1<<i)) continue;
+            int cans = dfs(i, cs, visited, g, label);
+            ans = max(ans, cans);
+        }
+        // visited.erase(curr);
+        visited^=(1<<curr);
+        cs.pop_back();
+        dp[curr][hv]=ans;
+        return ans;
+    }
+    int maxLen(int n, vector<vector<int>>& edges, string label) {
+        vector<vector<int>> g(n);
+        for(auto &i: edges){
+            int a = i[0]; int b = i[1];
+            g[a].push_back(b);g[b].push_back(a);
+        }
+        int ans{0};
+        int visited{0};
+        string cs;
+        dp.resize(n);
+        for(int i = 0;i<n;i++) 
+            ans = max(ans, dfs(i, cs, visited, g, label));
+        return ans;
+
+
     }
 };
-
 
 int main() {
     // cout<<StringChallenge("**+*{2} mmmrrrkbb");
@@ -85,7 +109,7 @@ int main() {
     vector<string> s2{"restaurant","grocery","pharmacy","restaurant"};
     vector<bool> isA {1,1,1,1};
     vector<char> c1{'a','a','c','d','d','d','g','o','o'};
-    vector<vector<int>> v12 {{13,16}};
+    vector<vector<int>> v12 {{2,0},{4,0},{4,1},{4,2},{1,2},{0,3},{2,3},{3,4}};
     vector<vector<int>> v13 {{0,1,2},{1,2,4}};
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
@@ -93,7 +117,7 @@ int main() {
     // for(auto i: s.validateCoupons(s1, s2, isA)) {
     //     cout<<i;
     // }
-    cout<<s.minMoves(1,2,5,4);
+    cout<<s.maxLen(5, v12, "jjggj");
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";

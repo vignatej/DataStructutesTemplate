@@ -5,64 +5,46 @@ using namespace std;
 #define VVI vector<vector<int>>
 #define VI vector<int>
 #define PB push_back
+const int M = 998244353;
 
-int get_hts(int c, vector<set<int>> &g, vector<int> &hts){
-    if(hts[c]!=-1) return hts[c];
-    int ch = 1;
-    for(auto i: g[c]) ch = max(ch, get_hts(i, g, hts));
-    return ch;
+int powl(int a, int b){
+    if(b==0) return 1;
+    if(b==1) return a;
+    int hlf = powl(a, b/2);
+    hlf=(hlf*hlf)%M;
+    if(b%2) hlf=(hlf*a)%M;
+    return hlf;
 }
-
-int get_child(int c, vector<set<int>> &g, vector<int> &child){
-    if(child[c]!=-1) return child[c];
-    int ch = 1;
-    for(auto i: g[c]) ch += get_child(i, g, child);
-    return ch;
+int calc_inv(int x, int m){
+    return powl(x, m-2);
 }
-
-int get_rem_count(int node, int h, vector<set<int>> &g, VI &hts, VI &child){
-    int ans = 0;
-    for(auto &i: g[node]){
-        if(get_hts(i, g, hts)<h-1){
-            ans+=get_child(i, g, child);
-            continue;
-        }
-        ans += get_rem_count(node, h-1, g, hts, child);
-    }
-    return ans;
-}
-
 
 signed main(){
-    int T; cin>>T;
-    while(T--){
-        int n; cin>>n;
-        vector<set<int>> g(n+1); 
-        for(int i=1;i<n;i++){
-            int a, b; cin>>a>>b;
-            g[a].insert(b); g[b].insert(a);
-        }
-        VI curr{1};
-        while(curr.size()>0){
-            VI next;
-            for(auto &i: curr){
-                for(auto &j: g[i]){
-                    g[j].erase(i);
-                    next.push_back(j);
-                }
-            }
-            curr=next;
-        }
-        VI hts(n+1, -1), child(n+1, -1);
-        get_hts(1, g, hts); get_child(1, g, child);
-        int l{1}, r{get_hts(1, g, hts)};
-        int ans = 1;
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    #ifndef ONLINE_JUDGE
+        freopen("in.txt", "r", stdin);
+        freopen("out.txt", "w", stdout);
+    #endif
+    int n; cin>>n;
+    int ans{0};
+    ans = ((((n%M)*((n+1)%M))%M)*calc_inv(2, M))%M;
+    for(int i =1;i<=n;){
+        int curr = floor(n/i);
+        int l{i},r{n};
+        int nex = l;
         while(l<=r){
             int m = (l+r)/2;
-            get_rem_count(1, m, )
+            if(floor(n/m)==curr){
+                nex=max(nex, m);
+                l=m+1;
+            }else{
+                r=m-1;
+            }
         }
-
+        ans= (ans - ((nex-i+1)*curr)%M + M)%M;
+        i=nex+1;
     }
+    cout<<ans%M;
 
     return 0;
 }
