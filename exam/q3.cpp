@@ -6,97 +6,35 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
-bool isp(int num){
-    string s = to_string(num);
-    string rs = s; reverse(rs.begin(), rs.end());
-    return s==rs;
-}
-
-bool checkBaseApall(int num, int b){
-    int og = num;
-    string s;
-    while(num){
-        s.push_back('0'+(num%b));
-        num/=b;
-    }
-    string rs = s; reverse(rs.begin(), rs.end());
-    if(s==rs){
-        // cout<<og<<'\n';
-    }
-
-    return s==rs;
-}
-
-int solve(int n, int a, int mp){
-    int ans{0};
-    for(int i = pow(10, n/2 -1);i<pow(10, n/2);i++){
-        string s = to_string(i);
-        if(s.length() < n/2)
-            s = string(n/2 - s.length(), '0') + s;
-        if(n%2){
-            for(int e = '0';e<='9';e++){
-                s.push_back(e);
-                int j = (n/2) -1;
-                while(j>=0){
-                    s.push_back(s[j]);
-                    j--;
-                }
-                int num = stoll(s);
-                if(num<=mp && checkBaseApall(num, a)) ans+=num;
-                j = (n/2) -1;
-                while(j>=0){
-                    s.pop_back();
-                    j--;
-                }
-                s.pop_back();
-            }
-            continue;
-        }
-        int j = (n/2) -1;
-        while(j>=0){
-            s.push_back(s[j]);
-            j--;
-        }
-        int num = stoll(s);
-        if(num<=mp && checkBaseApall(num, a)) ans+=num;
-    }
-    return ans;
-}
-
-int do_it1(int a, int n){
-    int ans{0};
-    // vector<int> vv{1,2,3,4,5,6,7,8,9};
-    // for(auto i: vv) if(checkBaseApall(i, a)) ans+=i;
-
-    for(int i = 1;i<=to_string(n).length();i++) ans+=solve(i, a, n);
-    return ans;
-}
-int do_it2(int a, int n){
-    int ans{0};
-    for(int i = 1;i<=n;i++){
-        if(isp(i) && checkBaseApall(i, a)){ 
-            ans+=i;
-        }
-    }
-    return ans;
-}
-
 signed main(){
-    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    #ifndef ONLINE_JUDGE
-        freopen("in.txt", "r", stdin);
-        freopen("out.txt", "w", stdout);
-    #endif
-    int a; int n; cin>>a>>n;
-    // cout<<"First\n";
-    // int ans1 = do_it1(a, n);
-    // cout<<"Second\n";
-    // int ans2 = do_it2(a, n);
-    // cout<<ans1<<' '<<ans2<<'\n';
-    // if(ans1==ans2) cout<<"YES";
-    // else cout<<"NO";
+    int T; cin>>T;
+    while(T--){
+        int n, k; cin>>n>>k;
+        vector<int> v1(n), v2(n);
+        for(int i = 0;i<n;i++) cin>>v1[i];
+        for(int i = 0;i<n;i++) cin>>v2[i];
+        int ans{0};
+        for(int i = 0;i<n;i++){
+            int a=v1[i]; int b = v2[i];
+            v1[i]=min(a, b);
+            v2[i]=max(a, b);
+            ans+=abs(a-b);
+        }
+        int oans{INT_MAX};
+        for(int i = 0;i<n;i++){
+            for(int j = i+1;j<n;j++){
+                int a = v1[i]; int b = v2[i];
+                int c = v1[j]; int d = v2[j];
+                int cans{ans};
+                cans -= abs(a-b)+abs(c-d);
+                vector<int> v{a, b, c, d};
+                sort(v.begin(), v.end());
+                cans += abs(v[0]-v[3])+abs(v[1]-v[2]);
+                oans=min(oans, cans);
+            }
+        }
+        cout<<oans<<'\n';
+    }
 
-
-    cout<<do_it1(a, n);
     return 0;
 }

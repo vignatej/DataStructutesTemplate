@@ -10,6 +10,8 @@
         "bitset": "cpp",
         "iosfwd": "cpp",
         "algorithm": "cpp",
-        "format": "cpp"
+        "format": "cpp",
+        "deque": "cpp",
+        "string": "cpp"
     }
 }

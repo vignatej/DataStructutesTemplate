@@ -29,70 +29,63 @@ using namespace std;
 #define ll long long
 #define VI vector<int>
 #define VVI vector<VI>
-
-const long long M = 1e9+7;
 class Solution {
 public:
-    bool isp(string &s){
-        int n = s.length();
-        int i = 0; int j = n-1;
-        while(i<=j){
-            if(s[i]!=s[j]) return false;
-            i++; j--;
-        }
-        return 1;
+    vector<vector<int>> points;
+    double dist(int p1, int p2){
+        double x1{points[p1][0]};
+        double y1{points[p1][1]}; 
+        double x2{points[p2][0]}; 
+        double y2{points[p2][1]};
+        return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
     }
-    // vector<long long> ppow{1};
-    int get_hv(string &cs){
-        long long p = 31; long long ppow=1;
-        long long hv = 0;
-        for(auto &i: cs){
-            hv=(hv+((i-'a'+1)*ppow)%M)%M;
-            ppow*=p;
-        }
-        return hv;
+    double slope(int x1, int y1, int x2, int y2){
+        if(x1==x2) return 1e9;
+        return (double)(y2-y1)/(x2-x1);
     }
-    vector<map<int, int>> dp;
-    int dfs(int curr, string &cs , int &visited, 
-                vector<vector<int>> &g, string &label){
-        // visited.insert(curr);
-        visited|=(1<<curr);
-        cs.push_back(label[curr]);
-        int hv = get_hv(cs);
-        if(dp[curr][hv]){ 
-            visited^=(1<<curr);
-            cs.pop_back();
-            return dp[curr][hv];
-        }
-        int ans{0};
-        if(isp(cs)) ans = cs.size();
-        // if(ans==5) cout<<cs<<' ';
-        for(auto i: g[curr]){
-            if(visited & (1<<i)) continue;
-            int cans = dfs(i, cs, visited, g, label);
-            ans = max(ans, cans);
-        }
-        // visited.erase(curr);
-        visited^=(1<<curr);
-        cs.pop_back();
-        dp[curr][hv]=ans;
-        return ans;
+    bool ist(int a, int b, int c){
+        bool ya = 1;
+        double ab = dist(a, b);
+        double bc = dist(c, b);
+        double ca = dist(a, c);
+        vector<double> q{ab, bc, ca};
+        sort(q.begin(), q.end());
+        if(q[2]==q[0]+q[1]) ya = 0;
+        return ya;
     }
-    int maxLen(int n, vector<vector<int>>& edges, string label) {
-        vector<vector<int>> g(n);
-        for(auto &i: edges){
-            int a = i[0]; int b = i[1];
-            g[a].push_back(b);g[b].push_back(a);
+    int countTrapezoids(vector<vector<int>>& points) {
+        int n = points.size();
+        this->points = points;
+        map<double, vector<pair<int, int>>> m;
+        map<double, map<int, int>> ma;
+        for(int i = 0;i<n;i++){
+            for(int j = i+1;j<n;j++){
+                double cs = slope(points[i][0],points[i][1],points[j][0],points[j][1]);
+                m[cs].push_back({i, j});
+                ma[cs][i]++;ma[cs][j]++;
+            }
         }
-        int ans{0};
-        int visited{0};
-        string cs;
-        dp.resize(n);
-        for(int i = 0;i<n;i++) 
-            ans = max(ans, dfs(i, cs, visited, g, label));
-        return ans;
-
-
+        set<set<int>> ss;
+        for(auto &q: m){
+            int cans{0};
+            double cs = q.first;
+            vector<pair<int, int>> &cv = q.second;
+            int cvs = cv.size();
+            for(int i = 0;i<cvs;i++){
+                for(int j = i+1;j<cvs;j++){
+                    int a = cv[i].first;
+                    int b = cv[i].second;
+                    int c = cv[j].first;
+                    int d = cv[j].second;
+                    if(!(dist(a,c) && dist(a, d) && dist(b, c) && dist(b, d))){continue;}
+                    if(ist(a, b, c) && ist(a, b, d)) 
+                        ss.insert({a, b, c, d});
+                    // if(ist(a, b, d) && ist(a, b, d)) ss.insert({a, b, c, d});
+                    
+                }
+            }
+        }
+        return ss.size();
     }
 };
 
@@ -109,7 +102,7 @@ int main() {
     vector<string> s2{"restaurant","grocery","pharmacy","restaurant"};
     vector<bool> isA {1,1,1,1};
     vector<char> c1{'a','a','c','d','d','d','g','o','o'};
-    vector<vector<int>> v12 {{2,0},{4,0},{4,1},{4,2},{1,2},{0,3},{2,3},{3,4}};
+    vector<vector<int>> v12 {{82,7},{82,-9},{82,-52},{82,78}};
     vector<vector<int>> v13 {{0,1,2},{1,2,4}};
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
@@ -117,7 +110,7 @@ int main() {
     // for(auto i: s.validateCoupons(s1, s2, isA)) {
     //     cout<<i;
     // }
-    cout<<s.maxLen(5, v12, "jjggj");
+    cout<<s.countTrapezoids(v12);
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";

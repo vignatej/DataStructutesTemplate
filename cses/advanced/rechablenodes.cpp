@@ -1,62 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define LL long long
+#define int LL
+#define VVI vector<vector<int>>
+#define VI vector<int>
+#define PB push_back
 
-const int MAXN = 5e4 + 5;
-
-vector<int> adj[MAXN];
-vector<int> order;
-bool visited[MAXN];
-int dp[MAXN];
-
-void dfs_topo(int u) {
-    visited[u] = true;
-    for (int v : adj[u]) {
-        if (!visited[v])
-            dfs_topo(v);
+signed main(){
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    #ifndef ONLINE_JUDGE
+        freopen("in.txt", "r", stdin);
+        freopen("out.txt", "w", stdout);
+    #endif
+    int n, m; cin>>n>>m;
+    vector<vector<int>> v(n+1), rv(n+1);
+    vector<bitset<50001>> g(n+1);
+    vector<int> od(n+1, 0);
+    for(int i = 0;i<m;i++){
+        int a, b; cin>>a>>b;
+        v[a].push_back(b);
+        rv[b].push_back(a);
+        od[a]++;
+        g[a].set(b);
     }
-    order.push_back(u);
-}
-
-int dfs(int u) {
-    if (dp[u] != -1) return dp[u];
-    int cnt = 1; // include self
-    for (int v : adj[u]) {
-        cnt += dfs(v);
-    }
-    return dp[u] = cnt;
-}
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n, m;
-    cin >> n >> m;
-
-    while (m--) {
-        int a, b;
-        cin >> a >> b;
-        adj[a].push_back(b);
+    for(int i = 1;i<=n;i++) g[i].set(i);
+    vector<int> ans(n+1, 0);
+    deque<int> ts; vector<bool> comp(n+1, false);
+    for(int i = 1;i<=n;i++) if(od[i]==0){ts.push_back(i); comp[i]=1;}
+    while(ts.size()){
+        auto t = ts.front(); ts.pop_front();
+        for(auto &j: rv[t]) od[j]--;
+        for(auto &j: rv[t]) if(od[j]==0 && comp[j]==false){
+            ts.push_back(j); comp[j]=1;
+        }
+        for(auto &j: v[t]) g[t]|=g[j];
+        ans[t]=g[t].count();
     }
 
-    // Topo sort
-    for (int i = 1; i <= n; ++i) {
-        if (!visited[i])
-            dfs_topo(i);
-    }
-
-    reverse(order.begin(), order.end());
-
-    // DP
-    fill(dp, dp + n + 1, -1);
-    for (int u : order) {
-        if (dp[u] == -1)
-            dfs(u);
-    }
-
-    for (int i = 1; i <= n; ++i) {
-        cout << dp[i] << " ";
-    }
-    cout << "\n";
+    for(int i =1;i<=n;i++) cout<<ans[i]<<' ';
     return 0;
 }
