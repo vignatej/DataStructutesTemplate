@@ -31,61 +31,41 @@ using namespace std;
 #define VVI vector<VI>
 class Solution {
 public:
-    vector<vector<int>> points;
-    double dist(int p1, int p2){
-        double x1{points[p1][0]};
-        double y1{points[p1][1]}; 
-        double x2{points[p2][0]}; 
-        double y2{points[p2][1]};
-        return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-    }
-    double slope(int x1, int y1, int x2, int y2){
-        if(x1==x2) return 1e9;
-        return (double)(y2-y1)/(x2-x1);
-    }
-    bool ist(int a, int b, int c){
-        bool ya = 1;
-        double ab = dist(a, b);
-        double bc = dist(c, b);
-        double ca = dist(a, c);
-        vector<double> q{ab, bc, ca};
-        sort(q.begin(), q.end());
-        if(q[2]==q[0]+q[1]) ya = 0;
-        return ya;
-    }
-    int countTrapezoids(vector<vector<int>>& points) {
-        int n = points.size();
-        this->points = points;
-        map<double, vector<pair<int, int>>> m;
-        map<double, map<int, int>> ma;
-        for(int i = 0;i<n;i++){
-            for(int j = i+1;j<n;j++){
-                double cs = slope(points[i][0],points[i][1],points[j][0],points[j][1]);
-                m[cs].push_back({i, j});
-                ma[cs][i]++;ma[cs][j]++;
-            }
-        }
-        set<set<int>> ss;
-        for(auto &q: m){
-            int cans{0};
-            double cs = q.first;
-            vector<pair<int, int>> &cv = q.second;
-            int cvs = cv.size();
-            for(int i = 0;i<cvs;i++){
-                for(int j = i+1;j<cvs;j++){
-                    int a = cv[i].first;
-                    int b = cv[i].second;
-                    int c = cv[j].first;
-                    int d = cv[j].second;
-                    if(!(dist(a,c) && dist(a, d) && dist(b, c) && dist(b, d))){continue;}
-                    if(ist(a, b, c) && ist(a, b, d)) 
-                        ss.insert({a, b, c, d});
-                    // if(ist(a, b, d) && ist(a, b, d)) ss.insert({a, b, c, d});
-                    
+    void nextPermutation(vector<int>& nums) {
+        int n = nums.size();
+        if(n==1) return;
+        // for(int i = n-2;i>=0;i--){
+        //     if(nums[i]<nums[i+1]){
+        //         swap(nums[i], nums[i+1]);
+        //         return;
+        //     }
+        // }
+        // bool a = next_permutation(nums.begin(), nums.end());
+        // if(a) return; 
+        // reverse(nums.begin(), nums.end());
+        // if(nums[n-2]<nums[n-1]){
+        //     swap(nums[n-2], nums[n-1]);
+        //     return;
+        // }
+        for(int i = n-2;i>=0;i--){
+            if(nums[i]<nums[i+1]){
+                int j = i+1;
+                while(j<n-1 && nums[j]>nums[j+1]) j++;
+                int mn = nums[i+1]; int kp = i+1;
+                for(int k = i+1;k<=j;k++){
+                    if(nums[k]<mn && nums[k]>nums[i]){
+                        mn=nums[k]; kp=k;
+                    }
                 }
+                cout<<i<<' '<<j<<' '<<kp;
+                swap(nums[i], nums[kp]);
+                sort(next(nums.begin(), i+1), next(nums.begin(), j+1));
+                return;
             }
         }
-        return ss.size();
+        int c = n-2;
+        while(c>0 && nums[c-1]>nums[c]) c--;
+        reverse(next(nums.begin(), c), nums.end());
     }
 };
 
@@ -94,7 +74,7 @@ int main() {
     // string st = "bbbab";
     Solution s;
     // vector<string> d {"a","b","ba","bca","bda","bdca"};
-    vector<int> v1 {1,2,3}; // = {3,1,5,3,1,1};
+    vector<int> v1 {1,3, 2}; // = {3,1,5,3,1,1};
     vector<int> v2{2,4};
     vector<vector<int>> v{{0,1},{0,4},{0,5},{1,7},{2,3},{2,4},{2,5},{3,6},{4,6},{4,7},{6,8},{7,8}};
     
@@ -107,10 +87,11 @@ int main() {
     vector<vector<char>> vc {{'1', '0', '1', '0', '0'},{'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}};
     vector<vector<string>> vs{{"a","0549"},{"b","0457"},{"a","0532"},{"a","0621"},{"b","0540"}};
     // cout<<"Hello";
-    // for(auto i: s.validateCoupons(s1, s2, isA)) {
-    //     cout<<i;
-    // }
-    cout<<s.countTrapezoids(v12);
+    s.nextPermutation(v1);
+    for(auto i: v1) {
+        cout<<i<<' ';
+    }
+    // cout<<s.nextPermutation(v1);
     // for(auto i: s.arrayRankTransform(v1)) cout<<i<<"-";
     // vector<bool> ans = s.canMakePalindromeQueries("hykkyh",v12);
     // for(auto i: ans) cout<<i<<" ";
