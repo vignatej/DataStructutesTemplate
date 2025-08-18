@@ -1,97 +1,171 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-typedef long long LL;
 
-/**
- * @brief A data structure that allow update point/range and query operations efficently
- *
- */
-template <typename T>
-class segment_tree {
-   public:
-    /**
-     * @brief Initialize a new segment tree object
-     *
-     * @param a An array of value
-     */
-    segment_tree(vector<T> a) {
-        n = a.size();
-        tree = vector<tree_node>(4 * n);
-        build(0, 0, n, a);
-    }
-    /**
-     * @brief Increase all item in range [l, r) by val
-     *
-     * @param l Left index
-     * @param r Right index
-     * @param val Value to increase by
-     */
-    void add_range(size_t l, size_t r, T val) {
-        add_range_main(0, 0, n, l, r, val);
-    }
-    /**
-     * @brief Get sum of range [l, r)
-     *
-     * @param l Left index
-     * @param r Right index
-     * @return The sum of range [l, r)
-     */
-    T query(size_t l, size_t r) {
-        return query_main(0, 0, n, l, r);
+struct LazySegTreeSum {
+    int n;
+    vector<long long> tree, lazy;
+
+    LazySegTreeSum(int sz) {
+        n = sz;
+        tree.assign(4 * n, 0);
+        lazy.assign(4 * n, 0);
     }
 
-   private:
-    struct tree_node {
-        T value;
-        T inc;
-    };
-    vector<tree_node> tree;
-    size_t n;
-    void build(size_t node, size_t l, size_t r, vector<T> &a) {
-        if (r - l == 1) {
-            tree[node].value = a[l];
+    void build(vector<long long>& arr, int idx, int l, int r) {
+        if (l == r) {
+            tree[idx] = arr[l];
             return;
         }
-        size_t mid = (l + r) / 2;
-        build(node * 2 + 1, l, mid, a);
-        build(node * 2 + 2, mid, r, a);
-        tree[node].value = tree[node * 2 + 1].value + tree[node * 2 + 2].value;
+        int mid = (l + r) / 2;
+        build(arr, idx * 2, l, mid);
+        build(arr, idx * 2 + 1, mid + 1, r);
+        tree[idx] = tree[idx * 2] + tree[idx * 2 + 1];
     }
-    void push(size_t node, size_t l, size_t r) {
-        size_t mid = (l + r) / 2;
-        if (tree[node].inc) {
-            add_range_main(node * 2 + 1, l, mid, l, mid, tree[node].inc);
-            add_range_main(node * 2 + 2, mid, r, mid, r, tree[node].inc);
-            tree[node].inc = 0;
+
+    void push(int idx, int l, int r) {
+        if (lazy[idx] != 0) {
+            tree[idx] += (r - l + 1) * lazy[idx];
+            if (l != r) {
+                lazy[idx * 2] += lazy[idx];
+                lazy[idx * 2 + 1] += lazy[idx];
+            }
+            lazy[idx] = 0;
         }
     }
-    void add_range_main(size_t node, size_t l, size_t r, size_t tree_l, size_t tree_r, T val) {
-        if (tree_r <= l || r <= tree_l) return;
-        if (tree_l <= l && r <= tree_r) {
-            tree[node].value += (r - l) * val;
-            tree[node].inc += val;
+
+    void update(int idx, int l, int r, int ql, int qr, long long val) {
+        push(idx, l, r);
+        if (qr < l || ql > r) return;
+        if (ql <= l && r <= qr) {
+            lazy[idx] += val;
+            push(idx, l, r);
             return;
         }
-        push(node, l, r);
-        size_t mid = (l + r) / 2;
-        add_range_main(node * 2 + 1, l, mid, tree_l, tree_r, val);
-        add_range_main(node * 2 + 2, mid, r, tree_l, tree_r, val);
-        tree[node].value = tree[node * 2 + 1].value + tree[node * 2 + 2].value;
+        int mid = (l + r) / 2;
+        update(idx * 2, l, mid, ql, qr, val);
+        update(idx * 2 + 1, mid + 1, r, ql, qr, val);
+        tree[idx] = tree[idx * 2] + tree[idx * 2 + 1];
     }
-    T query_main(size_t node, size_t l, size_t r, size_t tree_l, size_t tree_r) {
-        if (tree_r <= l || r <= tree_l) return 0;
-        if (tree_l <= l && r <= tree_r) return tree[node].value;
-        push(node, l, r);
-        size_t mid = (l + r) / 2;
-        return query_main(node * 2 + 1, l, mid, tree_l, tree_r) + query_main(node * 2 + 2, mid, r, tree_l, tree_r);
+
+    long long query(int idx, int l, int r, int ql, int qr) {
+        push(idx, l, r);
+        if (qr < l || ql > r) return 0;
+        if (ql <= l && r <= qr) return tree[idx];
+        int mid = (l + r) / 2;
+        return query(idx * 2, l, mid, ql, qr) +
+               query(idx * 2 + 1, mid + 1, r, ql, qr);
     }
 };
 
-int main() {
-    vector<LL> a = {1, 2, 3, 4};
-    segment_tree<LL> tree(a);          // initialize segment tree
-    cout << tree.query(0, 4) << '\n';  // 10
-    tree.add_range(0, 4, 1);           // increase all items in range [l, r) by 1
-    cout << tree.query(0, 4) << '\n';  // 14
-}
+struct LazySegTree {
+    int n;
+    vector<long long> tree, lazy;
+
+    LazySegTree(int sz) {
+        n = sz;
+        tree.assign(4 * n, LLONG_MAX);
+        lazy.assign(4 * n, 0);
+    }
+
+    void build(vector<long long>& arr, int idx, int l, int r) {
+        if (l == r) {
+            tree[idx] = arr[l];
+            return;
+        }
+        int mid = (l + r) / 2;
+        build(arr, idx * 2, l, mid);
+        build(arr, idx * 2 + 1, mid + 1, r);
+        tree[idx] = min(tree[idx * 2], tree[idx * 2 + 1]);
+    }
+
+    void push(int idx, int l, int r) {
+        if (lazy[idx] != 0) {
+            tree[idx] += lazy[idx];
+            if (l != r) {
+                lazy[idx * 2] += lazy[idx];
+                lazy[idx * 2 + 1] += lazy[idx];
+            }
+            lazy[idx] = 0;
+        }
+    }
+
+    void update(int idx, int l, int r, int ql, int qr, long long val) {
+        push(idx, l, r);
+        if (qr < l || ql > r) return;
+        if (ql <= l && r <= qr) {
+            lazy[idx] += val;
+            push(idx, l, r);
+            return;
+        }
+        int mid = (l + r) / 2;
+        update(idx * 2, l, mid, ql, qr, val);
+        update(idx * 2 + 1, mid + 1, r, ql, qr, val);
+        tree[idx] = min(tree[idx * 2], tree[idx * 2 + 1]);
+    }
+
+    long long query(int idx, int l, int r, int ql, int qr) {
+        push(idx, l, r);
+        if (qr < l || ql > r) return LLONG_MAX;
+        if (ql <= l && r <= qr) return tree[idx];
+        int mid = (l + r) / 2;
+        return min(query(idx * 2, l, mid, ql, qr),
+                   query(idx * 2 + 1, mid + 1, r, ql, qr));
+    }
+};
+
+// int main() {
+//     ios::sync_with_stdio(false);
+//     cin.tie(nullptr);
+
+//     int n, q;
+//     cin >> n >> q;
+//     vector<long long> arr(n);
+//     for (int i = 0; i < n; i++) cin >> arr[i];
+
+//     LazySegTree seg(n);
+//     seg.build(arr, 1, 0, n - 1);
+
+//     while (q--) {
+//         int type;
+//         cin >> type;
+//         if (type == 1) {
+//             int l, r;
+//             long long val;
+//             cin >> l >> r >> val;
+//             seg.update(1, 0, n - 1, l, r, val);
+//         } else if (type == 2) {
+//             int l, r;
+//             cin >> l >> r;
+//             cout << seg.query(1, 0, n - 1, l, r) << "\n";
+//         }
+//     }
+// }
+
+
+// int main() {
+//     ios::sync_with_stdio(false);
+//     cin.tie(nullptr);
+
+//     int n, q;
+//     cin >> n >> q;
+//     vector<long long> arr(n);
+//     for (int i = 0; i < n; i++) cin >> arr[i];
+
+//     LazySegTree seg(n);
+//     seg.build(arr, 1, 0, n - 1);
+
+//     while (q--) {
+//         int type;
+//         cin >> type;
+//         if (type == 1) {
+//             int l, r;
+//             long long val;
+//             cin >> l >> r >> val;
+//             seg.update(1, 0, n - 1, l, r, val);
+//         } else if (type == 2) {
+//             int l, r;
+//             cin >> l >> r;
+//             cout << seg.query(1, 0, n - 1, l, r) << "\n";
+//         }
+//     }
+// }
