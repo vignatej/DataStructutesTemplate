@@ -7,33 +7,27 @@ using namespace std;
 #define PB push_back
 
 signed main(){
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    #ifndef ONLINE_JUDGE
+        freopen("in.txt", "r", stdin);
+        freopen("out.txt", "w", stdout);
+    #endif
     int T; cin>>T;
     while(T--){
-        int n, k; cin>>n>>k;
-        vector<int> v1(n), v2(n);
-        for(int i = 0;i<n;i++) cin>>v1[i];
-        for(int i = 0;i<n;i++) cin>>v2[i];
+        int n; cin>>n;
+        vector<int> rem;
+        while(n>0){
+            rem.push_back(n%3);
+            n/=3;
+        }
         int ans{0};
-        for(int i = 0;i<n;i++){
-            int a=v1[i]; int b = v2[i];
-            v1[i]=min(a, b);
-            v2[i]=max(a, b);
-            ans+=abs(a-b);
+        for(int i = 0;i<rem.size();i++){
+            int cv{0};
+            if(i==0) cv = 3;
+            else cv = powl(3, i-1)*(9+i);
+            ans+=rem[i]*cv;
         }
-        int oans{INT_MAX};
-        for(int i = 0;i<n;i++){
-            for(int j = i+1;j<n;j++){
-                int a = v1[i]; int b = v2[i];
-                int c = v1[j]; int d = v2[j];
-                int cans{ans};
-                cans -= abs(a-b)+abs(c-d);
-                vector<int> v{a, b, c, d};
-                sort(v.begin(), v.end());
-                cans += abs(v[0]-v[3])+abs(v[1]-v[2]);
-                oans=min(oans, cans);
-            }
-        }
-        cout<<oans<<'\n';
+        cout<<ans<<'\n';
     }
 
     return 0;

@@ -14,27 +14,39 @@ signed main(){
     #endif
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        vector<int> v(n+1), ans(n+1, 0);
-        for(int i =1;i<=n;i++) cin>>v[i];
-        ans[1]=1;
-        ans[2]=2;
-        if(v[1]>v[2]) ans[2]+=1;
-        for(int i = 3;i<=n;i++){
-            int a = v[i-2]; int b = v[i-1]; int c= v[i];
-            if(a>b && b>c){
-                ans[i]=ans[i-1]+i;
-            }else if(a>c && c>b){
-                ans[i]=max(ans[i-1], ans[i-2]+i-2+2);
-            }else if(b>a && a>c){
-                ans[i]=max(ans[i-1]+i, ans[i-2]+i-2+3);
-            }else if(b>c && c>a){
-                ans[i]=ans[i-1]+i;
-            }
+        int n, k; cin>>n>>k;
+        vector<int> rem;
+        while(n>0){
+            rem.push_back(n%3);
+            n/=3;
         }
-        int fa{0};
-        for(auto i: ans) fa+=i;
-        cout<<fa<<'\n';
+        int ck{0};
+        for(auto i: rem) ck+=i;
+        if(ck>k){ cout<<-1<<'\n'; continue;}
+        int cp = max(0LL, (int)rem.size() - 2);
+
+        while(cp >= 0 && cp+1 < rem.size() && ck + 2 <= k) {
+            // while(rem[cp+1] && ck + 2 <= k) {
+            //     rem[cp+1]--;
+            //     rem[cp] += 3;
+            //     ck += 2;
+            // }
+            int tf = (k-ck)/2;
+            tf = min(tf, rem[cp+1]);
+            rem[cp+1]-=tf; rem[cp]+=3*tf;
+            ck+=2*tf;
+            if(rem[cp+1] == 0) cp--;
+        }
+
+        
+        int ans{0};
+        for(int i = 0;i<rem.size();i++){
+            int cv{0};
+            if(i==0) cv = 3;
+            else cv = powl(3, i-1)*(9+i);
+            ans+=rem[i]*cv;
+        }
+        cout<<ans<<'\n';
     }
 
     return 0;

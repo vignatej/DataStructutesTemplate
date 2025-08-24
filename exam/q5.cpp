@@ -1,77 +1,60 @@
 #include <bits/stdc++.h>
 using namespace std;
+
 #define LL long long
 #define int LL
-#define VVI vector<vector<int>>
-#define VI vector<int>
-#define PB push_back
 
+int dp[18][2][2];
+pair<int, int> do_it(int n, string &cn, int i, bool tight){
+    if(i==n){
+        return {1, 0};
+    }
+    if(dp[i][tight][0]!=-1 && dp[i][tight][1]!=-1) 
+        return {dp[i][tight][0], dp[i][tight][1]};
+    int ans{0}; int times{0};
+    for(int j = 0;j<(tight ? cn[i]-'0'+1:10);j++){
+        pair<int, int> cans = do_it(n, cn, i+1, tight && j==cn[i]-'0');
+        ans += cans.second + cans.first*j;
+        times += cans.first;
+    }
+    dp[i][tight][0]=times; dp[i][tight][1]=ans;
+    return {times,ans};
+}
+
+vector<int> v{1};
+int powl(int a, int b){
+    return v[b];
+}
 signed main(){
-    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    #ifndef ONLINE_JUDGE
-        freopen("in.txt", "r", stdin);
-        freopen("out.txt", "w", stdout);
-    #endif
-    int n, m; cin>>n>>m;
-    vector<vector<int>> adj(n+1, vector<int>(n+1, 1e16));
-    for(int i = 0;i<m;i++){
-        int a, b, c; cin>>a>>b>>c;
-        adj[a][b]=min(adj[a][b], c);
-        adj[b][a]=min(adj[b][a], c);
+    int T; cin>>T;
+    for(int i = 0;i<18;i++){
+        v.push_back(v.back()*10);
     }
-    for(int i = 1;i<=n;i++) adj[i][i]=0;
-    for(int k = 1;k<=n;k++){
-        for(int i =1;i<=n;i++){
-            for(int j = 1;j<=n;j++){
-                adj[i][j]=min(adj[i][j], adj[i][k]+adj[k][j]);
-            }
+    while(T--){
+        int n; cin>>n;
+        int cn = n;
+        int d{1};
+        for(; d<=18; d++){
+            int cdn = 1LL*9*powl(10, d-1)*d;
+            if(cn>=cdn) cn-=cdn;
+            else break;
         }
-    }
-    int k, t; cin>>k>>t;
-    vector<int> A(k); 
-    for(int i = 0;i<k;i++) cin>>A[i];
-    vector<int> Airport(n+1, 1e16);
-    for(int i =1;i<=n;i++){
-        for(auto &j: A){
-            Airport[i]=min(Airport[i], adj[i][j]);
+        string ln;
+        ln.push_back('0'+1+cn/(d*powl(10, d-1)));
+        cn = cn % (LL)(d*powl(10, d-1));
+        int cd = d-1;
+        while(cd>0){
+            ln.push_back('0'+cn/(d*powl(10, cd-1)));
+            cn = cn % (LL)(d*powl(10, cd-1));
+            cd--;
         }
+        int fans = stoll(ln);
+        fans--;
+        int s{0};
+        for(int i = 0;i<cn;i++) s+=ln[i]-'0';
+        string rs = to_string(fans);
+        memset(dp, -1, sizeof(dp));
+        s += do_it(rs.size(), rs, 0, 1).second;
+        cout<<s<<' '<<'\n';
     }
-    int q; cin>>q;
-    while(q--){
-        int typ; cin>>typ;
-        if(typ==1){
-            int x, y, v; cin>>x>>y>>v;
-            adj[x][y]=min(v, adj[x][y]); 
-            adj[y][x]=min(v, adj[y][x]);
-            for(int i = 1;i<=n;i++) for(int j = 1;j<=n;j++){
-                adj[i][j]=min({
-                    adj[i][j], 
-                    adj[i][x]+v+adj[y][j], 
-                    adj[i][y]+v+adj[x][j]
-                });
-            }
-            for(int i = 1;i<=n;i++){
-                for(auto &j: A){
-                    Airport[i]=min(Airport[i], adj[i][j]);
-                }
-            }
-        }else if(typ==2){
-            int x; cin>>x;
-            A.push_back(x);
-            for(int i = 1;i<=n;i++) 
-                Airport[i]=min(Airport[i], adj[i][x]);
-        }else if(typ==3){
-            int ans{0};
-            for(int i =1;i<=n;i++) for(int j = 1;j<=n;j++){
-                int cans = adj[i][j];
-                cans = min(cans, Airport[i]+Airport[j]+t);
-                if(cans>=1e16) continue;
-                else ans+=cans;
-            }
-            cout<<ans<<'\n';
-        }
-    }
-
-
-    return 0;
 }

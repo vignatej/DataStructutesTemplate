@@ -6,77 +6,77 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
-class node{public:
-    vector<node*> child;
-    int a{0}; bool comp{false};
-    node(int a):a(a){}
-    int get_ans1{-1}, get_ans2{-1};
-    void get(){
-        if(comp) {get_ans1=0; get_ans2=0;}
-        if(get_ans1!=-1) return;
-        vector<int> ca;
-        for(auto i: child){
-            i->get();
-            ca.push_back(i->get_ans1);
-        }
-        sort(ca.rbegin(), ca.rend());
-        get_ans1=0; get_ans2=0;
-        for(int i = 0;i<ca.size() && i<1;i++) get_ans1+=ca[i];
-        for(int i = 0;i<ca.size() && i<2;i++) get_ans2+=ca[i];
-        get_ans1+=a;get_ans2+=a;
-        return;
-    }
-    void make_black(){
-        comp=1;
-        vector<pair<int, node*>> ca;
-        for(auto i: child){
-            ca.push_back({i->get_ans1, i});
-        }
-        sort(ca.rbegin(), ca.rend());
-        for(int i = 0;i<ca.size() && i<1;i++) 
-            ca[i].second->make_black();
-    }
-};
-void resolve(node* curr, node* par){
-    curr->child.erase(find(curr->child.begin(), curr->child.end(), par));
-    for(auto i: curr->child) resolve(i, curr);
-}
-
 signed main(){
-    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    #ifndef ONLINE_JUDGE
-        freopen("in.txt", "r", stdin);
-        freopen("out.txt", "w", stdout);
-    #endif
-    int n, k; cin>>n>>k;
-    vector<node*> v;
-    for(int i = 0;i<n;i++){
-        int a; cin>>a;
-        v.push_back(new node(a));
-    }  
-    for(int i = 1;i<n;i++){
-        int a, b; cin>>a>>b; 
-        a--; b--;
-        v[a]->child.push_back(v[b]);
-        v[b]->child.push_back(v[a]);
-    }
-    for(auto i: v[0]->child) resolve(i, v[0]);
-    int ans{0};
-    while(k--){
-        int ans_i = 0;
-        for(int i = 0;i<n;i++){
-            v[i]->get();
-            if(v[i]->get_ans2>v[ans_i]->get_ans2) ans_i = i;
-        }
-        if(v[ans_i]->get_ans2<=0) break;
-        ans += v[ans_i]->get_ans2;
+    int T; cin>>T;
+    while(T--){
+        int n, m, q; cin>>n>>m>>q;
+        vector<int> A(n), B(m), aps(n+1), bps(m+1);
+        for(int i = 0;i<n;i++) cin>>A[i];
+        for(int i = 0;i<m;i++) cin>>B[i];
+        sort(A.rbegin(), A.rend());
+        sort(B.rbegin(), B.rend());
+        for(int i = 0;i<n;i++) aps[i+1]=aps[i]+A[i];
+        for(int i = 0;i<m;i++) bps[i+1]=bps[i]+B[i];
+        while(q--){
+            int x, y, z; cin>>x>>y>>z;
+            if(z==0){
+                cout<<0<<'\n';
+                continue; 
+            }
+            int i1 = max(1LL*0, z-y-1);
+            int j1 = min({n-1, x-1, z-1});
 
-        v[ans_i]->comp=1;
-        for(auto &j: v[ans_i]->child) j->make_black();
-        for(int i = 0;i<n;i++) v[i]->get_ans1=-1;
-        for(int i = 0;i<n;i++) v[i]->get_ans2=-1;
+            int i2 = max(1LL*0, z-x-1);
+            int j2 = min({m-1, y-1, z-1});
+
+            if(i1>j1 || i2>j2){
+                if(i1>j1 && i2>j2){
+                    cout<<0<<'\n';
+                    continue;
+                }else if(i1>j1){
+                    if(z<=y) cout<<bps[z]<<'\n';
+                    else cout<<0<<'\n';
+                    continue;
+                }else{
+                    if(z<=x) cout<<aps[z]<<'\n';
+                    else cout<<0<<'\n';
+                    continue;
+                }
+            }
+
+            int ans = aps[i1+1] + bps[z-i1-1];
+            while(i1<=j1){
+                int m1 = i1 + (j1-i1)/3;
+                int m2 = j1 - (j1-i1)/3;
+                int cans1 = aps[m1+1]+bps[z-m1-1];
+                int cans2 = aps[m2+1]+bps[z-m2-1];
+                if(cans1<cans2){
+                    ans = max(ans, cans2);
+                    i1=m1+1;
+                }else{
+                    ans=max(ans, cans1);
+                    j1=m2-1;
+                }
+            }
+
+            while(i2<=j2){
+                int m1 = i2 + (j2-i2)/3;
+                int m2 = j2 - (j2-i2)/3;
+                int cans1 = bps[m1+1]+aps[z-m1-1];
+                int cans2 = bps[m2+1]+aps[z-m2-1];
+                if(cans1<cans2){
+                    ans = max(ans, cans2);
+                    i2=m1+1;
+                }else{
+                    ans=max(ans, cans1);
+                    j2=m2-1;
+                }
+            }
+
+            cout<<ans<<'\n';
+        }
+
     }
-    cout<<ans;
 
     return 0;
 }
