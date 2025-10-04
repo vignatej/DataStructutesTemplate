@@ -13,8 +13,8 @@ if __name__ == "__main__":
     v = multiprocessing.Value('i', 0)  # shared integer, NOT thread/process safe without lock
     processes = []
     for _ in range(10):
-        p = multiprocessing.Process(target=inc1, args=(v,))
-        # p = multiprocessing.Process(target=inc2, args=(v,))
+        # p = multiprocessing.Process(target=inc1, args=(v,))
+        p = multiprocessing.Process(target=inc2, args=(v,))
         processes.append(p)
         p.start()
 

@@ -15,19 +15,31 @@ signed main(){
     int T; cin>>T;
     while(T--){
         int n; cin>>n;
-        vector<int> rem;
-        while(n>0){
-            rem.push_back(n%3);
-            n/=3;
+        string s; cin>>s;
+        bool ans = true;
+        if((s[0]=='0' && s[1]=='1')||(s[n-2]=='1' && s[n-1]=='0'))
+            ans = false;
+        for(int i = 1;i<n-1;i++)
+            if(s[i-1]=='1' && s[i]=='0' && s[i+1]=='1') ans = false;
+        if(!ans){
+            cout<<"NO\n"; continue;
         }
-        int ans{0};
-        for(int i = 0;i<rem.size();i++){
-            int cv{0};
-            if(i==0) cv = 3;
-            else cv = powl(3, i-1)*(9+i);
-            ans+=rem[i]*cv;
+        vector<int> v(n, 0);
+        int i = 0;
+        while(i<n){
+            if(s[i]=='1') {
+                v[i]=i; i++; continue;
+            }
+            int j = i+1;
+            while(j<n && s[j]=='0') j++;
+            for(int k = i;k<j;k++){
+                v[k]=j-(k-i)-1;
+            }
+            i=j;
         }
-        cout<<ans<<'\n';
+        cout<<"YES\n";
+        for(auto i: v) cout<<i+1<<' ';
+        cout<<'\n';
     }
 
     return 0;

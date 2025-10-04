@@ -34,6 +34,26 @@ void gen_perm(int i, int n){
 }
 
 
+class Solution {
+public:
+    vector<vector<int>> all_p;
+    void duplicate_perm(int i, vector<int> &cp){
+        int n = cp.size();
+        if(i==n){
+            all_p.push_back(cp);
+            return;
+        }
+        set<int> used;
+        for(int j = i;j<n;j++){
+            if(used.find(cp[j])!=used.end()) continue;
+            used.insert(cp[j]);
+            swap(cp[i], cp[j]);
+            duplicate_perm(i+1, cp);
+            swap(cp[i], cp[j]);
+        }
+    }
+};
+
 int main()
 {
     // gen_sub(0, 3);

@@ -1,60 +1,58 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define LL long long
 #define int LL
+#define VVI vector<vector<int>>
+#define VI vector<int>
+#define PB push_back
 
-int dp[18][2][2];
-pair<int, int> do_it(int n, string &cn, int i, bool tight){
-    if(i==n){
-        return {1, 0};
+vector<int> solve(int l, int r){
+    if(l==r){
+        return {l};
     }
-    if(dp[i][tight][0]!=-1 && dp[i][tight][1]!=-1) 
-        return {dp[i][tight][0], dp[i][tight][1]};
-    int ans{0}; int times{0};
-    for(int j = 0;j<(tight ? cn[i]-'0'+1:10);j++){
-        pair<int, int> cans = do_it(n, cn, i+1, tight && j==cn[i]-'0');
-        ans += cans.second + cans.first*j;
-        times += cans.first;
+    // int n = 1;
+    // while(n<=r) n=n<<1;
+    // n=n>>1;
+    // n is where first bit changes;
+    int n = 30;
+    while(n>=0 && !(((l>>n)&1)^((r>>n)&1))) n--;
+
+    n=((l>>n)<<n) + (1<<n);
+    int le = n-l; int re = r-n+1;
+    if(le==re){
+        vector<int> ans;
+        for(int i = r;i>=l;i--) ans.push_back(i);
+        return ans;
+    }else if(le<re){
+        int ns = n+le;
+        auto ans1 = solve(l, ns-1);
+        auto ans2 = solve(ns, r);
+        copy(ans2.begin(), ans2.end(), back_inserter(ans1));
+        return ans1;
+    }else{
+        auto ans1 = solve(l, n-re-1);
+        auto ans2 = solve(n-re, r);
+        copy(ans2.begin(), ans2.end(), back_inserter(ans1));
+        return ans1;
     }
-    dp[i][tight][0]=times; dp[i][tight][1]=ans;
-    return {times,ans};
 }
 
-vector<int> v{1};
-int powl(int a, int b){
-    return v[b];
-}
 signed main(){
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    #ifndef ONLINE_JUDGE
+        freopen("in.txt", "r", stdin);
+        freopen("out.txt", "w", stdout);
+    #endif
     int T; cin>>T;
-    for(int i = 0;i<18;i++){
-        v.push_back(v.back()*10);
-    }
     while(T--){
-        int n; cin>>n;
-        int cn = n;
-        int d{1};
-        for(; d<=18; d++){
-            int cdn = 1LL*9*powl(10, d-1)*d;
-            if(cn>=cdn) cn-=cdn;
-            else break;
-        }
-        string ln;
-        ln.push_back('0'+1+cn/(d*powl(10, d-1)));
-        cn = cn % (LL)(d*powl(10, d-1));
-        int cd = d-1;
-        while(cd>0){
-            ln.push_back('0'+cn/(d*powl(10, cd-1)));
-            cn = cn % (LL)(d*powl(10, cd-1));
-            cd--;
-        }
-        int fans = stoll(ln);
-        fans--;
-        int s{0};
-        for(int i = 0;i<cn;i++) s+=ln[i]-'0';
-        string rs = to_string(fans);
-        memset(dp, -1, sizeof(dp));
-        s += do_it(rs.size(), rs, 0, 1).second;
-        cout<<s<<' '<<'\n';
+        int l, r; cin>>l>>r;
+        auto ans = solve(l, r);
+        int ansv{0}; int ce = l;
+        for(auto i: ans){ansv+=i|ce;ce++;}
+        cout<<ansv<<'\n';
+        for(auto i: ans) cout<<i<<' ';
+        cout<<'\n';
     }
+
+    return 0;
 }

@@ -15,15 +15,12 @@ signed main(){
     int T; cin>>T;
     while(T--){
         int n; cin>>n;
-        string s, V, D, b, v; cin>>s;
-        cin>>n; cin>>b; cin>>v;
-        int cs = b.length();
-        for(int i = 0;i<cs;i++){
-            if(v[i]=='V') V.push_back(b[i]);
-            else D.push_back(b[i]);
+        set<int> s;
+        for(int i = 0;i<n;i++) {
+            int c; cin>>c; s.insert(c);
         }
-        reverse(V.begin(), V.end());
-        cout<<V<<s<<D<<'\n';
+        int ans = s.size();
+        cout<<ans*2-1<<'\n';
     }
 
     return 0;
