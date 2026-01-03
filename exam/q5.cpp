@@ -6,37 +6,6 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
-vector<int> solve(int l, int r){
-    if(l==r){
-        return {l};
-    }
-    // int n = 1;
-    // while(n<=r) n=n<<1;
-    // n=n>>1;
-    // n is where first bit changes;
-    int n = 30;
-    while(n>=0 && !(((l>>n)&1)^((r>>n)&1))) n--;
-
-    n=((l>>n)<<n) + (1<<n);
-    int le = n-l; int re = r-n+1;
-    if(le==re){
-        vector<int> ans;
-        for(int i = r;i>=l;i--) ans.push_back(i);
-        return ans;
-    }else if(le<re){
-        int ns = n+le;
-        auto ans1 = solve(l, ns-1);
-        auto ans2 = solve(ns, r);
-        copy(ans2.begin(), ans2.end(), back_inserter(ans1));
-        return ans1;
-    }else{
-        auto ans1 = solve(l, n-re-1);
-        auto ans2 = solve(n-re, r);
-        copy(ans2.begin(), ans2.end(), back_inserter(ans1));
-        return ans1;
-    }
-}
-
 signed main(){
     ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
     #ifndef ONLINE_JUDGE
@@ -45,12 +14,43 @@ signed main(){
     #endif
     int T; cin>>T;
     while(T--){
-        int l, r; cin>>l>>r;
-        auto ans = solve(l, r);
-        int ansv{0}; int ce = l;
-        for(auto i: ans){ansv+=i|ce;ce++;}
-        cout<<ansv<<'\n';
-        for(auto i: ans) cout<<i<<' ';
+        int n, k, x; cin>>n>>k>>x;
+        vector<int> v(n); for(auto &i: v) cin>>i;
+        set<int> vs; for(auto i: v) vs.insert(i);
+        sort(v.begin(), v.end());
+        priority_queue<pair<int, int>> pq;
+        set<int> plotted;
+        if(v[0]!=0) pq.push({v[0], 0});
+        if(v[n-1]!=x) pq.push({x-v[n-1], x});
+        for(int i = 1;i<n;i++){
+            int a = v[i-1]; int b = v[i];
+            if(b-a<=1) continue;
+            pq.push({(b-a)/2, (a+b)/2});
+            if((b-a)%2==1)pq.push({(b-a)/2, 1LL+(a+b)/2});
+        }
+        while(plotted.size()<k && pq.size()){
+            auto a = pq.top(); pq.pop();
+            int dff=a.first; int p = a.second;
+            if(plotted.count(p)) continue;
+            plotted.insert(p);
+            if(p-1>=0 && plotted.count(p-1)==0){
+                // skipping edge case - check ra vigna
+                auto it = vs.upper_bound(p-1); it--;
+                int val = *it;
+                pq.push({p-1-val, p-1});
+            }
+            if(p+1<=x && plotted.count(p+1)==0){
+                auto it = vs.lower_bound(p+1);
+                int val = *it;
+                pq.push({val-p-1, p+1});
+            }
+        }
+        int ce = 0;
+        while(plotted.size()<k){
+            plotted.insert(ce);
+            ce++;
+        }
+        for(auto i: plotted) cout<<i<<' ';
         cout<<'\n';
     }
 

@@ -60,7 +60,7 @@ signed main(){
     int n, q; cin>>n>>q;
     VI v(n); for(int i =0;i<n;i++) cin>>v[i];
     lazy_seg_tree lst(v);
-    cout<<lst.get_sum(0,1)<<'\n';
+    cout<<lst.get_sum(2,2)<<'\n';
     cout<<lst.get_sum(0,5)<<'\n';
     cout<<lst.get_sum(3,6)<<'\n';
     return 0;

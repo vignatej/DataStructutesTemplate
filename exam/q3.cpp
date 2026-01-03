@@ -6,6 +6,25 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
+vector<int> solve_once(vector<int> &v){
+    int n = v.size();
+    sort(v.begin(), v.end());
+    map<int, int> vm; for(auto i: v) vm[i]++;
+    int mex = 0;
+    int i = 0;
+    while(i<n){
+        if(mex==v[i]) mex++;
+        i++;
+    }
+    vector<int> ans;
+    for(int i = 0;i<n;i++){
+        if(v[i]>mex){ ans.push_back(mex); continue;}
+        if(vm[v[i]]>1){ans.push_back(mex); continue;}
+        ans.push_back(v[i]);
+    }
+    return ans;
+}
+
 signed main(){
     ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
     #ifndef ONLINE_JUDGE
@@ -14,32 +33,32 @@ signed main(){
     #endif
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        string s; cin>>s;
-        bool ans = true;
-        if((s[0]=='0' && s[1]=='1')||(s[n-2]=='1' && s[n-1]=='0'))
-            ans = false;
-        for(int i = 1;i<n-1;i++)
-            if(s[i-1]=='1' && s[i]=='0' && s[i+1]=='1') ans = false;
-        if(!ans){
-            cout<<"NO\n"; continue;
+        int n, k; cin>>n>>k;
+        vector<int> v(n); for(int i = 0;i<n;i++) cin>>v[i];
+        int ct = 4; vector<int> nex = v;
+        while(k && ct--){
+            k--;
+            nex = solve_once(nex);
         }
-        vector<int> v(n, 0);
-        int i = 0;
-        while(i<n){
-            if(s[i]=='1') {
-                v[i]=i; i++; continue;
-            }
-            int j = i+1;
-            while(j<n && s[j]=='0') j++;
-            for(int k = i;k<j;k++){
-                v[k]=j-(k-i)-1;
-            }
-            i=j;
+        if(!k){
+            LL cs{0};
+            for(auto i: nex) cs+=i;
+            cout<<cs<<'\n';
+            continue;
         }
-        cout<<"YES\n";
-        for(auto i: v) cout<<i+1<<' ';
-        cout<<'\n';
+        if(k%2==0){
+            LL cs{0};
+            for(auto i: nex) cs+=i;
+            cout<<cs<<'\n';
+            continue;
+        }else{
+            nex = solve_once(nex);
+            LL cs{0};
+            for(auto i: nex) cs+=i;
+            cout<<cs<<'\n';
+            continue;
+        }
+
     }
 
     return 0;
