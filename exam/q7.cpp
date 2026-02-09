@@ -6,41 +6,47 @@ using namespace std;
 #define VI vector<int>
 #define PB push_back
 
+void dfs(vector<vector<int>> &g, int cn, int p, vector<int> &st){
+    st.push_back(cn);
+    for(auto i: g[cn]){
+        if(i==p) continue;
+        dfs(g, i, cn, st);
+    }
+}
+
+
 signed main(){
-    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    #ifndef ONLINE_JUDGE
-        freopen("in.txt", "r", stdin);
-        freopen("out.txt", "w", stdout);
-    #endif
+    // ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    // #ifndef ONLINE_JUDGE
+    //     freopen("in.txt", "r", stdin);
+    //     freopen("out.txt", "w", stdout);
+    // #endif
     int T; cin>>T;
     while(T--){
         int n; cin>>n;
-        vector<int> v(n), c(n);
-        for(int i = 0;i<n;i++) cin>>v[i];
-        for(int i = 0;i<n;i++) cin>>c[i];
-        map<int, int> m;
-        for(int i = 0;i<n;i++){
-            if(m.size()==0){m[v[i]]=c[i]; continue;}
-            auto it = m.upper_bound(v[i]);
-            if(it==m.begin()){
-                m[v[i]]=c[i];
-            }else{
-                it--;
-                int val = it->second;
-                m[v[i]]=val+c[i];
-            }
-            auto it1 = m.upper_bound(v[i]);
-            auto it2 = it1;
-            while(it2!=m.end()){
-                if(it2->second>m[v[i]]) break;
-                it2++; 
-            }
-            if(it1==it2) continue;
-            m.erase(it1, it2);
+        vector<vector<int>> g(n+1);
+        for(int i = 1;i<n;i++){
+            int a, b; cin>>a>>b;
+            g[a].push_back(b); g[b].push_back(a);
         }
-        int ans{0};
-        for(auto i: c) ans+=i;
-        cout<<ans-m.rbegin()->second<<'\n';
+        vector<int> st;
+        dfs(g, 1, 0, st);
+        bool ans = 0;
+        for(int i = 0;i+1<st.size() && !ans;i+=2){
+            cout<<"? "<<st[i]<<" "<<st[i+1]<<'\n';
+            int cv; cin>>cv;
+            if(cv==1){
+                ans=1;
+                cout<<"? "<<st[i]<<" "<<st[i]<<'\n';
+                cin>>cv;
+                if(cv){cout<<"! "<<st[i]<<'\n';}
+                else{cout<<"! "<<st[i+1]<<'\n';}
+            }
+        }
+        if(!ans){
+            cout<<"! "<<st[st.size()-1]<<'\n';
+        }
+
     }
 
     return 0;
