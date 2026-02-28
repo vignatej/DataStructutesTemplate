@@ -1,67 +1,51 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-class RideSharingSystem {
-public:
-    deque<int> d;
-    // set<int> c;
-    set<pair<int, int>> r; int rc{0};
-    map<int, int> ufr;
-
-    RideSharingSystem() {
-        
-    }
-    
-    void addRider(int riderId) {
-        
-        ufr[riderId]=++rc;
-        r.insert({rc, riderId});
-    }
-    
-    void addDriver(int driverId) {
-        d.push_back(driverId);
-    }
-    
-    vector<int> matchDriverWithRider() {
-        if(r.size()==0 || d.size()==0) return {-1, -1}; 
-        auto tr = *r.begin(); r.erase(tr);
-        ufr.erase(tr.first);
-        vector<int> ans = {d.front(), tr.second};
-        d.pop_front();
-        return ans;
-    }
-    
-    void cancelRider(int riderId) {
-        if(ufr.find(riderId)==ufr.end()) return;
-        int f = ufr[riderId];
-        r.erase({f, riderId});
-        ufr.erase(riderId);
-        
-    }
-};
-
-/**
- * Your RideSharingSystem object will be instantiated and called as such:
- * RideSharingSystem* obj = new RideSharingSystem();
- * obj->addRider(riderId);
- * obj->addDriver(driverId);
- * vector<int> param_3 = obj->matchDriverWithRider();
- * obj->cancelRider(riderId);
- */
-
+#define LL long long
+#define int LL
+#define VVI vector<vector<int>>
+#define VI vector<int>
+#define PB push_back
 
 signed main(){
-    RideSharingSystem s;
-    s.addRider(8);
-    s.addDriver(8);
-    s.addDriver(6);
-    auto fa = s.matchDriverWithRider();
-    cout<<fa[0]<<' '<<fa[1]<<'\n';
-    s.addRider(2);
-    s.cancelRider(2);
-    fa = s.matchDriverWithRider();
-    cout<<fa[0]<<' '<<fa[1]<<'\n';
-    
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    #ifndef ONLINE_JUDGE
+        freopen("in.txt", "r", stdin);
+        freopen("out.txt", "w", stdout);
+    #endif
+    int T; cin>>T;
+    while(T--){
+        int n, x, y; cin>>n>>x>>y;
+        vector<int> v(n); for(auto &i: v) cin>>i;
+        vector<int> f, s;
+        for(int i = 1;i<=n;i++){
+            if(i<=x){
+                f.push_back(v[i-1]);
+            }else if(i<=y){
+                s.push_back(v[i-1]);
+            }else{
+                f.push_back(v[i-1]);
+            }
+        }
+        int min_s = 0; 
+        for(int i = 0;i<s.size();i++) if(s[i]<s[min_s]) min_s=i;
+        vector<int> ns;
+        for(int i = min_s;i<s.size();i++) ns.push_back(s[i]);
+        for(int i = 0;i<min_s;i++) ns.push_back(s[i]);
+        s=ns;
+
+        vector<int> ans;
+        int i = 0;
+        for(;i<f.size();i++){
+            if(f[i]>s[0]) break;
+            ans.push_back(f[i]);
+        }
+        copy(s.begin(), s.end(), back_inserter(ans));
+        for(;i<f.size();i++){
+            ans.push_back(f[i]);
+        }
+        for(auto i: ans) cout<<i<<' ';
+        cout<<'\n';
+    }
 
     return 0;
 }

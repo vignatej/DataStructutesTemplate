@@ -66,7 +66,6 @@ void split(node* curr, int k, node* &l, node* &r){
         sum_re_calc(l);
         sum_re_calc(r);
     }
-
 }
 signed main(){
     ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);

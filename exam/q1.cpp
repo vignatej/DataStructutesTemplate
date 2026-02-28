@@ -14,9 +14,12 @@ signed main(){
     #endif
     int T; cin>>T;
     while(T--){
-        int n, x; cin>>n>>x;
-        int ans = ceil(n/x)*(x-1)+n%x;
-        cout<<ans<<'\n';
+        int n; cin>>n;
+        vector<int> v(n); for(auto &i: v) cin>>i;
+        int m = v[0]; for(auto i: v) m=max(m, i);
+        int c{0}; for(auto i: v) if(i==m) c++;
+        cout<<c<<'\n';
+        // continue;
     }
 
     return 0;
