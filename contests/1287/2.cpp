@@ -12,30 +12,16 @@ signed main(){
         freopen("in.txt", "r", stdin);
         freopen("out.txt", "w", stdout);
     #endif
-    int n, k; cin>>n>>k;
-    vector<string> v(n);
-    set<string> m;
-    for(int i = 0;i<n;i++){
-        cin>>v[i];
-    }
-    int ans{0};
-    for(int i = 0;i<n;i++){
-        for(int j = 0;j<i;j++){
-            string req = "";
-            for(int l = 0;l<k;l++){
-                if(v[i][l]==v[j][l]) req.push_back(v[i][l]);
-                else{
-                    vector<char> al{'S', 'E', 'T'};
-                    al.erase(find(al.begin(), al.end(), v[i][l]));
-                    al.erase(find(al.begin(), al.end(), v[j][l]));
-                    req.push_back(al.front());
-                }
-            }
-            if(req!=v[j]) ans+=m.count(req);
+    int T; cin>>T;
+    while(T--){
+        int n; cin>>n;
+        vector<int> v(n); for(auto &i: v) cin>>i;
+        int ans{0};
+        for(int i = 1;i<n;i++){
+            if(abs(v[i-1]-v[i])==1) ans++;
         }
-        m.insert(v[i]);
+        cout<<ans<<'\n';
     }
-    cout<<ans/2<<'\n';
 
     return 0;
 }
