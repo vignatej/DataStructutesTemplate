@@ -14,11 +14,16 @@ signed main(){
     #endif
     int T; cin>>T;
     while(T--){
-        int n; cin>>n;
-        vector<int> v(n); for(auto &i: v) cin>>i;
-        bool poss = 0;
-        for(int i = 1;i<n;i++) if(v[i-1]>v[i]) poss=1;
-        cout<<(poss?1:n)<<'\n';
+        int n, a, b, k; cin>>n>>a>>b>>k;
+        if(n==2 || n==3){
+            cout<<1<<'\n';
+            continue;
+        }
+        if(a>b) swap(a, b);
+        // int ans{0};
+        int ans = k+min(b-a, n-(b-a));
+        if(k && n/2==b-a) ans--;
+        cout<<ans<<'\n';
 
     }
 
